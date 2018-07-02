@@ -1,5 +1,7 @@
 package config
 
+import "strings"
+
 type Config struct {
 	Jackett Jackett
 	Dest    []Destination `toml:"destinations"`
@@ -20,7 +22,7 @@ type Jackett struct {
 
 func (c *Config) GetDestination(name string) *Destination {
 	for _, i := range c.Dest {
-		if name == i.Name {
+		if strings.ToUpper(name) == strings.ToUpper(i.Name) {
 			return &i
 		}
 	}

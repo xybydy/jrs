@@ -58,11 +58,12 @@ func init() {
 }
 
 func main() {
-	req, _ := http.NewRequest("GET", "http://192.168.1.21:9093/api/settings/indexers?apikey=18573072d90e4752b80fddd247fb80f1", nil)
+	req, _ := http.NewRequest("GET", "http://192.168.1.21:9093/api/seriesId?apikey=18573072d90e4752b80fddd247fb80f1", nil)
 	client := new(http.Client)
 	q, _ := client.Do(req)
 	defer q.Body.Close()
 	ee, _ := ioutil.ReadAll(q.Body)
 	fmt.Printf("%s", ee)
+	// TODO http response 303 to be fixed
 
 }
