@@ -120,6 +120,28 @@ func (r *Radarr) MoviesSearch(movieIds []int) *http.Request {
 }
 
 func (r *Radarr) DownloadedMoviesScan(path, downloadClient, importMode string) {
+	data := url.Values{}
+
+	data.Add("name", "downloadedmoviesscan")
+
+	if path != "" {
+		data.Add("path", path)
+	}
+
+	if downloadClient != "" {
+		data.Add("downloadClient", downloadClient) //(nzoid for sabnzbd, special 'drone' attribute value for nzbget, uppercase infohash for torrents),
+	}
+
+	if importMode != "" {
+		data.Add("importMode", importMode)
+	}
+
+	path := r.getApiPath("command", "")
+	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
+		req.Header = r.headers
+		return req
+	}
+	return nil
 
 }
 
@@ -212,7 +234,7 @@ func (r *Radarr) NetImportSync() *http.Request {
 	return nil
 }
 
-func (r *Radarr) missingMoviesSearch(filterKey, filterValue string) *http.Request {
+func (r *Radarr) MissingMoviesSearch(filterKey, filterValue string) *http.Request {
 	data := url.Values{}
 
 	if filterKey == "" {
