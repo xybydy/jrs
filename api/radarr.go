@@ -1,12 +1,19 @@
 package api
 
 import (
+	"bytes"
+	"encoding/json"
 	"jrs/config"
 	"jrs/utils"
 	"net/http"
 	"net/url"
 	"strings"
 )
+
+type image struct {
+	coverType string
+	url       string
+}
 
 type Radarr struct {
 	api     string
@@ -22,11 +29,11 @@ func NewRadarr(c *config.Config) *Radarr {
 	return r
 }
 
-func (r *Radarr) getApiPath(endpoint, action string, args ...string) string {
-	path := r.path + "/api/" + endpoint
+func (r *Radarr) getAPIPath(args ...string) string {
+	path := r.path + "/api"
 
-	if action != "" {
-		path = path + "/" + action
+	for _, arg := range args {
+		path = path + "/" + arg
 	}
 
 	return path
@@ -34,7 +41,7 @@ func (r *Radarr) getApiPath(endpoint, action string, args ...string) string {
 
 func (r *Radarr) Calendar() *http.Request {
 	// TODO start, end to be impletemented
-	path := r.getApiPath("calendar", "")
+	path := r.getAPIPath("calendar", "")
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = r.headers
 		return req
@@ -43,7 +50,7 @@ func (r *Radarr) Calendar() *http.Request {
 }
 
 func (r *Radarr) DiskSpace() *http.Request {
-	path := r.getApiPath("diskspace", "")
+	path := r.getAPIPath("diskspace", "")
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = r.headers
 		return req
@@ -52,7 +59,7 @@ func (r *Radarr) DiskSpace() *http.Request {
 }
 
 func (r *Radarr) GetOngoingCommands() *http.Request {
-	path := r.getApiPath("command", "")
+	path := r.getAPIPath("command", "")
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = r.headers
 		return req
@@ -61,7 +68,7 @@ func (r *Radarr) GetOngoingCommands() *http.Request {
 }
 
 func (r *Radarr) GetCommandStatus(id string) *http.Request {
-	path := r.getApiPath("command", id)
+	path := r.getAPIPath("command", id)
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = r.headers
 		return req
@@ -69,15 +76,15 @@ func (r *Radarr) GetCommandStatus(id string) *http.Request {
 	return nil
 }
 
-func (r *Radarr) RefreshMovie(movieId string) *http.Request {
+func (r *Radarr) RefreshMovie(movieID string) *http.Request {
 	data := url.Values{}
 	data.Add("name", "refreshmovie")
 
-	if movieId != "" {
-		data.Add("movieId", movieId)
+	if movieID != "" {
+		data.Add("movieId", movieID)
 	}
 
-	path := r.getApiPath("command", "")
+	path := r.getAPIPath("command", "")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = r.headers
 		return req
@@ -85,15 +92,15 @@ func (r *Radarr) RefreshMovie(movieId string) *http.Request {
 	return nil
 }
 
-func (r *Radarr) RescanMovie(movieId string) *http.Request {
+func (r *Radarr) RescanMovie(movieID string) *http.Request {
 	data := url.Values{}
 	data.Add("name", "rescanmovie")
 
-	if movieId != "" {
-		data.Add("movieId", movieId)
+	if movieID != "" {
+		data.Add("movieId", movieID)
 	}
 
-	path := r.getApiPath("command", "")
+	path := r.getAPIPath("command", "")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = r.headers
 		return req
@@ -111,7 +118,7 @@ func (r *Radarr) MoviesSearch(movieIds []int) *http.Request {
 		}
 	}
 
-	path := r.getApiPath("command", "")
+	path := r.getAPIPath("command", "")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = r.headers
 		return req
@@ -119,7 +126,7 @@ func (r *Radarr) MoviesSearch(movieIds []int) *http.Request {
 	return nil
 }
 
-func (r *Radarr) DownloadedMoviesScan(path, downloadClient, importMode string) {
+func (r *Radarr) DownloadedMoviesScan(path, downloadClient, importMode string) *http.Request {
 	data := url.Values{}
 
 	data.Add("name", "downloadedmoviesscan")
@@ -136,8 +143,8 @@ func (r *Radarr) DownloadedMoviesScan(path, downloadClient, importMode string) {
 		data.Add("importMode", importMode)
 	}
 
-	path := r.getApiPath("command", "")
-	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
+	reqPath := r.getAPIPath("command", "")
+	if req, err := http.NewRequest("POST", reqPath, strings.NewReader(data.Encode())); err == nil {
 		req.Header = r.headers
 		return req
 	}
@@ -150,7 +157,7 @@ func (r *Radarr) RssSync() *http.Request {
 
 	data.Add("name", "rsssync")
 
-	path := r.getApiPath("command", "")
+	path := r.getAPIPath("command", "")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = r.headers
 		return req
@@ -169,7 +176,7 @@ func (r *Radarr) RenameFiles(files []int) *http.Request {
 		}
 	}
 
-	path := r.getApiPath("command", "")
+	path := r.getAPIPath("command", "")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = r.headers
 		return req
@@ -188,7 +195,7 @@ func (r *Radarr) RenameMovies(movieIds []int) *http.Request {
 		}
 	}
 
-	path := r.getApiPath("command", "")
+	path := r.getAPIPath("command", "")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = r.headers
 		return req
@@ -213,7 +220,7 @@ func (r *Radarr) CutOffUnmetMoviesSearch(filterKey, filterValue string) *http.Re
 
 	data.Add("name", "cutoffunmetmoviessearch") //monitored, all, status
 
-	path := r.getApiPath("command", "")
+	path := r.getAPIPath("command", "")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = r.headers
 		return req
@@ -226,7 +233,7 @@ func (r *Radarr) NetImportSync() *http.Request {
 
 	data.Add("name", "netimportsync")
 
-	path := r.getApiPath("command", "")
+	path := r.getAPIPath("command", "")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = r.headers
 		return req
@@ -251,8 +258,138 @@ func (r *Radarr) MissingMoviesSearch(filterKey, filterValue string) *http.Reques
 
 	data.Add("name", "missingmoviessearch")
 
-	path := r.getApiPath("command", "")
+	path := r.getAPIPath("command", "")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
+		req.Header = r.headers
+		return req
+	}
+	return nil
+}
+
+func (r *Radarr) History(sortKey, page, pageSize, sortDir string) *http.Request {
+	data := url.Values{}
+
+	if sortKey == "" {
+		data.Add("sortKey", "date") // series.title OR data
+	} else {
+		data.Add("sortKey", sortKey)
+	}
+
+	if page != "" {
+		data.Add("page", page)
+	}
+
+	if pageSize != "" {
+		data.Add("pageSize", pageSize)
+	}
+
+	if sortDir != "" {
+		data.Add("sortDir", sortDir)
+	}
+
+	path := r.getAPIPath("history", "")
+
+	if req, err := http.NewRequest("GET", path, nil); err == nil {
+		req.Header = r.headers
+		return req
+	}
+	return nil
+}
+
+// Nil id returns the all movies
+func (r *Radarr) GetMovie(id string) *http.Request {
+	path := r.getAPIPath("movie", id)
+	if req, err := http.NewRequest("GET", path, nil); err == nil {
+		req.Header = r.headers
+		return req
+	}
+	return nil
+}
+
+// Update and Add method not implemented yet || how to get rootfolder
+func (r *Radarr) AddMovie(title, qualityProfileID, titleSlug, tmdbID, path string, images []image, monitored bool) *http.Request {
+	data := url.Values{}
+	img := new(bytes.Buffer)
+
+	data.Add("title", title)
+	data.Add("qualityProfileId", qualityProfileID)
+	data.Add("titleSlug", titleSlug)
+	data.Add("tmdbId ", tmdbID)
+
+	if monitored == true {
+		data.Add("monitored", "true")
+	} else {
+		data.Add("monitored", "false")
+	}
+
+	json.NewEncoder(img).Encode(images)
+	data.Add("images", img.String())
+
+	reqPath := r.getAPIPath("movie")
+	if req, err := http.NewRequest("GET", reqPath, strings.NewReader(data.Encode())); err == nil {
+		req.Header = r.headers
+		return req
+	}
+	return nil
+}
+
+func (r *Radarr) RemoveMovie(id string) *http.Request {
+	path := r.getAPIPath("movie", id)
+	if req, err := http.NewRequest("DELETE", path, nil); err == nil {
+		req.Header = r.headers
+		return req
+	}
+	return nil
+}
+
+func (r *Radarr) SearchByName(name string) *http.Request {
+	data := url.Values{}
+	term := url.PathEscape(name)
+
+	data.Add("term", term)
+
+	path := r.getAPIPath("movie", "lookup")
+	if req, err := http.NewRequest("GET", path, strings.NewReader(data.Encode())); err == nil {
+		req.Header = r.headers
+		return req
+	}
+	return nil
+
+}
+
+func (r *Radarr) SearchByTmdb(tmdbID string) *http.Request {
+	data := url.Values{}
+	term := url.PathEscape(tmdbID)
+
+	data.Add("tmdbId", term)
+
+	path := r.getAPIPath("movie", "lookup", "tmdb")
+	if req, err := http.NewRequest("GET", path, strings.NewReader(data.Encode())); err == nil {
+		req.Header = r.headers
+		return req
+	}
+	return nil
+
+}
+
+func (r *Radarr) SearchByImdb(imdbID string) *http.Request {
+	data := url.Values{}
+	term := url.PathEscape(imdbID)
+
+	data.Add("imdbId", term)
+
+	path := r.getAPIPath("movie", "lookup", "imdb")
+	if req, err := http.NewRequest("GET", path, strings.NewReader(data.Encode())); err == nil {
+		req.Header = r.headers
+		return req
+	}
+	return nil
+
+}
+
+func (r *Radarr) SystemStatus() *http.Request {
+	path := r.getAPIPath("system", "status")
+	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = r.headers
 		return req
 	}

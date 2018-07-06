@@ -14,12 +14,12 @@ var (
 )
 
 type Caps struct {
-	Id   string `json:"ID"`
+	ID   string `json:"ID"`
 	Name string `json:"Name"`
 }
 
 type Indexer struct {
-	Id               string
+	ID               string
 	Name             string
 	Description      string
 	Type             string
@@ -33,7 +33,7 @@ type Indexer struct {
 }
 
 type IndexerConfig []struct {
-	Id      string
+	ID      string
 	Type    string            `json:,omitempty`
 	Name    string            `json:,omitempty`
 	Value   string            `json:,omitempty`
@@ -42,7 +42,7 @@ type IndexerConfig []struct {
 
 func (ic *IndexerConfig) UpdateField(id, param string) {
 	for _, i := range *ic {
-		if i.Id == id {
+		if i.ID == id {
 			i.Value = param
 		}
 	}
@@ -57,7 +57,7 @@ type Indexers []Indexer
 
 func (i *Indexers) GetIndexer(id string) *Indexer {
 	for _, k := range *i {
-		if k.Id == id {
+		if k.ID == id {
 			return &k
 		}
 	}
@@ -78,7 +78,7 @@ func NewJackett(conf *config.Config) *Jackett {
 	return j
 }
 
-func (j *Jackett) getApiPath(category, action string, args ...string) string {
+func (j *Jackett) getAPIPath(category, action string, args ...string) string {
 	path := j.path + "/api/v" + j.version + "/" + category
 
 	if action != "" {
@@ -88,12 +88,12 @@ func (j *Jackett) getApiPath(category, action string, args ...string) string {
 	return path
 }
 
-func (j *Jackett) ExportTorznab(indexerId string) string {
-	return fmt.Sprintf(j.path + "api/v" + j.version + "/indexers/" + indexerId + "/results/torznab/")
+func (j *Jackett) ExportTorznab(indexerID string) string {
+	return fmt.Sprintf(j.path + "api/v" + j.version + "/indexers/" + indexerID + "/results/torznab/")
 }
 
-func (j *Jackett) ExportPotato(indexerId string) string {
-	return fmt.Sprintf(j.path + "api/v" + j.version + "/indexers/" + indexerId + "/results/potato/")
+func (j *Jackett) ExportPotato(indexerID string) string {
+	return fmt.Sprintf(j.path + "api/v" + j.version + "/indexers/" + indexerID + "/results/potato/")
 }
 
 func (j *Jackett) GetAPI() string {
@@ -101,7 +101,7 @@ func (j *Jackett) GetAPI() string {
 }
 
 func (j *Jackett) GetAllIndexers() *http.Request {
-	path := j.getApiPath("indexers", "")
+	path := j.getAPIPath("indexers", "")
 	fmt.Println(path)
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = j.headers
@@ -112,7 +112,7 @@ func (j *Jackett) GetAllIndexers() *http.Request {
 }
 
 func (j *Jackett) GetServerConfig() *http.Request {
-	path := j.getApiPath("server", "config")
+	path := j.getAPIPath("server", "config")
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = j.headers
 		return req
@@ -120,8 +120,8 @@ func (j *Jackett) GetServerConfig() *http.Request {
 	return nil
 }
 
-func (j *Jackett) GetIndexerConfig(indexerId string) *http.Request {
-	path := j.getApiPath("indexers", indexerId+"/config")
+func (j *Jackett) GetIndexerConfig(indexerID string) *http.Request {
+	path := j.getAPIPath("indexers", indexerID+"/config")
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = j.headers
 		return req
@@ -129,8 +129,8 @@ func (j *Jackett) GetIndexerConfig(indexerId string) *http.Request {
 	return nil
 }
 
-func (j *Jackett) UpdateIndexerConfig(indexerId, config string) *http.Request {
-	path := j.getApiPath("indexers", indexerId+"/config")
+func (j *Jackett) UpdateIndexerConfig(indexerID, config string) *http.Request {
+	path := j.getAPIPath("indexers", indexerID+"/config")
 
 	if req, err := http.NewRequest("POST", path, strings.NewReader(config)); err == nil {
 		req.Header = j.headers
@@ -139,8 +139,8 @@ func (j *Jackett) UpdateIndexerConfig(indexerId, config string) *http.Request {
 	return nil
 }
 
-func (j *Jackett) DeleteIndexer(indexerId string) *http.Request {
-	path := j.getApiPath("indexers", indexerId)
+func (j *Jackett) DeleteIndexer(indexerID string) *http.Request {
+	path := j.getAPIPath("indexers", indexerID)
 
 	if req, err := http.NewRequest("DELETE", path, nil); err == nil {
 		req.Header = j.headers
@@ -149,8 +149,8 @@ func (j *Jackett) DeleteIndexer(indexerId string) *http.Request {
 	return nil
 }
 
-func (j *Jackett) TestIndexer(indexerId string) *http.Request {
-	path := j.getApiPath("indexers", indexerId+"/test")
+func (j *Jackett) TestIndexer(indexerID string) *http.Request {
+	path := j.getAPIPath("indexers", indexerID+"/test")
 	if req, err := http.NewRequest("POST", path, nil); err == nil {
 		req.Header = j.headers
 		return req
@@ -158,8 +158,8 @@ func (j *Jackett) TestIndexer(indexerId string) *http.Request {
 	return nil
 }
 
-func (j *Jackett) ResultsForIndexer(indexerId, query string) *http.Request {
-	path := j.getApiPath("indexers", indexerId+"/results?apikey="+j.api)
+func (j *Jackett) ResultsForIndexer(indexerID, query string) *http.Request {
+	path := j.getAPIPath("indexers", indexerID+"/results?apikey="+j.api)
 
 	if req, err := http.NewRequest("GET", path, strings.NewReader(query)); err == nil {
 		req.Header = j.headers
@@ -169,7 +169,7 @@ func (j *Jackett) ResultsForIndexer(indexerId, query string) *http.Request {
 }
 
 func (j *Jackett) GetServerCache() *http.Request {
-	path := j.getApiPath("server", "cache")
+	path := j.getAPIPath("server", "cache")
 
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = j.headers
@@ -179,7 +179,7 @@ func (j *Jackett) GetServerCache() *http.Request {
 }
 
 func (j *Jackett) GetServerLogs() *http.Request {
-	path := j.getApiPath("server", "logs")
+	path := j.getAPIPath("server", "logs")
 
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = j.headers
@@ -190,7 +190,7 @@ func (j *Jackett) GetServerLogs() *http.Request {
 }
 
 func (j *Jackett) UpdateServerConfig(serverConfig string) *http.Request {
-	path := j.getApiPath("server", "config")
+	path := j.getAPIPath("server", "config")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(serverConfig)); err != nil {
 		req.Header = j.headers
 		return req
@@ -199,7 +199,7 @@ func (j *Jackett) UpdateServerConfig(serverConfig string) *http.Request {
 }
 
 func (j *Jackett) UpdateServer() *http.Request {
-	path := j.getApiPath("server", "update")
+	path := j.getAPIPath("server", "update")
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = j.headers
 		return req
@@ -208,7 +208,7 @@ func (j *Jackett) UpdateServer() *http.Request {
 }
 
 func (j *Jackett) UpdateAdminPassword(password string) *http.Request {
-	path := j.getApiPath("server", "adminpassword")
+	path := j.getAPIPath("server", "adminpassword")
 
 	if req, err := http.NewRequest("POST", path, strings.NewReader(password)); err == nil {
 		req.Header = j.headers

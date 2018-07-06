@@ -9,15 +9,15 @@ type Config struct {
 
 type Destination struct {
 	Name string
-	Ip   string
+	IP   string
 	Port int
-	Api  string
+	API  string
 }
 
 type Jackett struct {
-	Ip   string
+	IP   string
 	Port int
-	Api  string
+	API  string
 }
 
 func (c *Config) GetDestination(name string) *Destination {

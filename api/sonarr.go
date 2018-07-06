@@ -22,18 +22,18 @@ func NewSonarr(c *config.Config) *Sonarr {
 	return s
 }
 
-func (s *Sonarr) getApiPath(endpoint, action string, args ...string) string {
-	path := s.path + "/api/" + endpoint
+func (s *Sonarr) getAPIPath(args ...string) string {
+	path := s.path + "/api"
 
-	if action != "" {
-		path = path + "/" + action
+	for _, arg := range args {
+		path = path + "/" + arg
 	}
 
 	return path
 }
 
 func (s *Sonarr) Calendar() *http.Request {
-	path := s.getApiPath("calendar", "")
+	path := s.getAPIPath("calendar", "")
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = s.headers
 		return req
@@ -42,7 +42,7 @@ func (s *Sonarr) Calendar() *http.Request {
 }
 
 func (s *Sonarr) GetOngoingCommands() *http.Request {
-	path := s.getApiPath("command", "")
+	path := s.getAPIPath("command", "")
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = s.headers
 		return req
@@ -51,7 +51,7 @@ func (s *Sonarr) GetOngoingCommands() *http.Request {
 }
 
 func (s *Sonarr) GetCommandStatus(id string) *http.Request {
-	path := s.getApiPath("command", id)
+	path := s.getAPIPath("command", id)
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = s.headers
 		return req
@@ -67,7 +67,7 @@ func (s *Sonarr) RefreshSeries(id string) *http.Request {
 		data.Add("seriesId", id)
 	}
 
-	path := s.getApiPath("command", "")
+	path := s.getAPIPath("command", "")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = s.headers
 		return req
@@ -83,7 +83,7 @@ func (s *Sonarr) RescanSeries(id string) *http.Request {
 		data.Add("seriesId", id)
 	}
 
-	path := s.getApiPath("command", "")
+	path := s.getAPIPath("command", "")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = s.headers
 		return req
@@ -101,7 +101,7 @@ func (s *Sonarr) EpisodeSearch(ids []int) *http.Request {
 		}
 	}
 
-	path := s.getApiPath("command", "")
+	path := s.getAPIPath("command", "")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = s.headers
 		return req
@@ -109,14 +109,14 @@ func (s *Sonarr) EpisodeSearch(ids []int) *http.Request {
 	return nil
 }
 
-func (s *Sonarr) SeasonSearch(seriesId, seasonNumber string) *http.Request {
+func (s *Sonarr) SeasonSearch(seriesID, seasonNumber string) *http.Request {
 	data := url.Values{}
 
 	data.Add("name", "seasonsearch")
-	data.Add("seriesId", seriesId)
+	data.Add("seriesId", seriesID)
 	data.Add("seasonNumber", seasonNumber)
 
-	path := s.getApiPath("command", "")
+	path := s.getAPIPath("command", "")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = s.headers
 		return req
@@ -124,13 +124,13 @@ func (s *Sonarr) SeasonSearch(seriesId, seasonNumber string) *http.Request {
 	return nil
 }
 
-func (s *Sonarr) SeriesSearch(seriesId string) *http.Request {
+func (s *Sonarr) SeriesSearch(seriesID string) *http.Request {
 	data := url.Values{}
 
 	data.Add("name", "seriessearch")
-	data.Add("seriesId", seriesId)
+	data.Add("seriesId", seriesID)
 
-	path := s.getApiPath("command", "")
+	path := s.getAPIPath("command", "")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = s.headers
 		return req
@@ -143,7 +143,7 @@ func (s *Sonarr) RssSync() *http.Request {
 
 	data.Add("name", "rsssync")
 
-	path := s.getApiPath("command", "")
+	path := s.getAPIPath("command", "")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = s.headers
 		return req
@@ -162,7 +162,7 @@ func (s *Sonarr) RenameFiles(files []int) *http.Request {
 		}
 	}
 
-	path := s.getApiPath("command", "")
+	path := s.getAPIPath("command", "")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = s.headers
 		return req
@@ -181,7 +181,7 @@ func (s *Sonarr) RenameSeries(seriesIds []int) *http.Request {
 		}
 	}
 
-	path := s.getApiPath("command", "")
+	path := s.getAPIPath("command", "")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = s.headers
 		return req
@@ -190,7 +190,7 @@ func (s *Sonarr) RenameSeries(seriesIds []int) *http.Request {
 }
 
 func (s *Sonarr) DiskSpace() *http.Request {
-	path := s.getApiPath("diskspace", "")
+	path := s.getAPIPath("diskspace", "")
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = s.headers
 		return req
@@ -203,7 +203,7 @@ func (s *Sonarr) Backup() *http.Request {
 
 	data.Add("name", "backup")
 
-	path := s.getApiPath("command", "")
+	path := s.getAPIPath("command", "")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = s.headers
 		return req
@@ -216,7 +216,7 @@ func (s *Sonarr) missingEpisodeSearch() *http.Request {
 
 	data.Add("name", "missingEpisodeSearch")
 
-	path := s.getApiPath("command", "")
+	path := s.getAPIPath("command", "")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = s.headers
 		return req
@@ -224,12 +224,12 @@ func (s *Sonarr) missingEpisodeSearch() *http.Request {
 	return nil
 }
 
-func (s *Sonarr) GetShow(seriesId string) *http.Request {
+func (s *Sonarr) GetShow(seriesID string) *http.Request {
 	data := url.Values{}
 
-	data.Add("seriesId", seriesId)
+	data.Add("seriesId", seriesID)
 
-	path := s.getApiPath("episode", "")
+	path := s.getAPIPath("episode", "")
 	if req, err := http.NewRequest("GET", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = s.headers
 		return req
@@ -237,8 +237,8 @@ func (s *Sonarr) GetShow(seriesId string) *http.Request {
 	return nil
 }
 
-func (s *Sonarr) GetEpisode(episodeId string) *http.Request {
-	path := s.getApiPath("episode", episodeId)
+func (s *Sonarr) GetEpisode(episodeID string) *http.Request {
+	path := s.getAPIPath("episode", episodeID)
 
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = s.headers
@@ -249,12 +249,12 @@ func (s *Sonarr) GetEpisode(episodeId string) *http.Request {
 
 // TODO Episode PUT to be implemented
 
-func (s *Sonarr) GetEpisodeFiles(seriesId string) *http.Request {
+func (s *Sonarr) GetEpisodeFiles(seriesID string) *http.Request {
 	data := url.Values{}
 
-	data.Add("seriesId", seriesId)
+	data.Add("seriesId", seriesID)
 
-	path := s.getApiPath("episodefile", "")
+	path := s.getAPIPath("episodefile", "")
 
 	if req, err := http.NewRequest("GET", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = s.headers
@@ -264,7 +264,7 @@ func (s *Sonarr) GetEpisodeFiles(seriesId string) *http.Request {
 }
 
 func (s *Sonarr) GetShowFiles(id string) *http.Request {
-	path := s.getApiPath("episodefile", id)
+	path := s.getAPIPath("episodefile", id)
 
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = s.headers
@@ -274,7 +274,7 @@ func (s *Sonarr) GetShowFiles(id string) *http.Request {
 }
 
 func (s *Sonarr) DeleteEpisode(id string) *http.Request {
-	path := s.getApiPath("episodefile", id)
+	path := s.getAPIPath("episodefile", id)
 
 	if req, err := http.NewRequest("DELETE", path, nil); err == nil {
 		req.Header = s.headers
@@ -304,7 +304,7 @@ func (s *Sonarr) History(sortKey, page, pageSize, sortDir string) *http.Request 
 		data.Add("sortDir", sortDir)
 	}
 
-	path := s.getApiPath("history", "")
+	path := s.getAPIPath("history", "")
 
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = s.headers
@@ -334,7 +334,7 @@ func (s *Sonarr) WantedMissing(sortKey, page, pageSize, sortDir string) *http.Re
 		data.Add("sortDir", sortDir)
 	}
 
-	path := s.getApiPath("wanted", "missing")
+	path := s.getAPIPath("wanted", "missing")
 
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = s.headers
@@ -344,7 +344,7 @@ func (s *Sonarr) WantedMissing(sortKey, page, pageSize, sortDir string) *http.Re
 }
 
 func (s *Sonarr) Queue() *http.Request {
-	path := s.getApiPath("queue", "")
+	path := s.getAPIPath("queue", "")
 
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = s.headers
@@ -364,7 +364,7 @@ func (s *Sonarr) RemoveDownload(id string, blacklist bool) *http.Request {
 		data.Add("blacklist", "false")
 	}
 
-	path := s.getApiPath("queue", "")
+	path := s.getAPIPath("queue", "")
 
 	if req, err := http.NewRequest("GET", path, strings.NewReader(data.Encode())); err == nil {
 		req.Header = s.headers
@@ -374,7 +374,7 @@ func (s *Sonarr) RemoveDownload(id string, blacklist bool) *http.Request {
 }
 
 func (s *Sonarr) GetProfiles() *http.Request {
-	path := s.getApiPath("profile", "")
+	path := s.getAPIPath("profile", "")
 
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = s.headers
