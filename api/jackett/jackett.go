@@ -1,4 +1,4 @@
-package api
+package jackett
 
 import (
 	"fmt"
@@ -34,10 +34,10 @@ type Indexer struct {
 
 type IndexerConfig []struct {
 	ID      string
-	Type    string            `json:,omitempty`
-	Name    string            `json:,omitempty`
-	Value   string            `json:,omitempty`
-	Options map[string]string `json:,omitempty`
+	Type    string            `json:",omitempty"`
+	Name    string            `json:",omitempty"`
+	Value   string            `json:",omitempty"`
+	Options map[string]string `json:",omitempty"`
 }
 
 func (ic *IndexerConfig) UpdateField(id, param string) {
@@ -73,7 +73,7 @@ type Jackett struct {
 }
 
 func NewJackett(conf *config.Config) *Jackett {
-	j := &Jackett{version: version, root: root, api: conf.Jackett.Api, path: utils.BuildURL(conf.Jackett.Ip, conf.Jackett.Port)}
+	j := &Jackett{version: version, root: root, api: conf.Jackett.API, path: utils.BuildURL(conf.Jackett.IP, conf.Jackett.Port), headers: make(http.Header)}
 	j.headers.Add("Content-Type", "application/json")
 	return j
 }
@@ -89,7 +89,7 @@ func (j *Jackett) getAPIPath(category, action string, args ...string) string {
 }
 
 func (j *Jackett) ExportTorznab(indexerID string) string {
-	return fmt.Sprintf(j.path + "api/v" + j.version + "/indexers/" + indexerID + "/results/torznab/")
+	return fmt.Sprintf(j.path + "/api/v" + j.version + "/indexers/" + indexerID + "/results/torznab/")
 }
 
 func (j *Jackett) ExportPotato(indexerID string) string {
@@ -102,7 +102,6 @@ func (j *Jackett) GetAPI() string {
 
 func (j *Jackett) GetAllIndexers() *http.Request {
 	path := j.getAPIPath("indexers", "")
-	fmt.Println(path)
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = j.headers
 		return req
