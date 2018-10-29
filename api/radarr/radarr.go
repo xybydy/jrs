@@ -21,7 +21,7 @@ func New(c *config.Config) *Radarr {
 }
 
 func (r *Radarr) MakeRequest(method string, body io.Reader, args ...string) (*http.Request, error) {
-	path := r.path + "/r/api"
+	path := r.path + "/api"
 
 	for _, arg := range args {
 		path = path + "/" + arg

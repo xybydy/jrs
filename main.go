@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"jrs/config"
 	"log"
 	"os"
@@ -23,6 +22,8 @@ import (
 
 	"jrs/api/radarr"
 
+	"flag"
+
 	"github.com/burntsushi/toml"
 )
 
@@ -32,9 +33,18 @@ var (
 )
 
 func init() {
-	flag.StringVar(&confArgs, "config", "config.toml", "Config File")
-	flag.Parse()
+	// flag.StringVar(&confArgs, "config", "config.toml", "Config File")
+	// flag.StringVar(&radarrApi, "rapi", "", "Radarr API")
+	// flag.StringVar(&radarrPath, "rpath", "", "Radarr Path")
+	// flag.StringVar(&sonarrApi, "sapi", "", "Sonarr API")
+	// flag.StringVar(&sonarrApi, "spath", "", "Sonarr Path")
+	// flag.StringVar(&jackettPath, "jpath", "", "Jackett Path")
+	// flag.StringVar(&jackettApi, "japi", "", "Jackett API")
+	// flag.BoolVar()
+	//
+	// flag.Parse()
 
+	confArgs = "config.toml"
 	if _, err := toml.DecodeFile(confArgs, &params); err != nil {
 		log.Fatal(err)
 	}
@@ -325,11 +335,91 @@ func RadarrDeleteAllIndexers() {
 }
 
 func main() {
-	// RadarrDeleteAllIndexers()
-	RadarrAddAllIndexes()
-	// RadarrTestAllIndexers()
-	// SonarrTestAllIndexers()
+	flag.Usage = func() {
+		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n", os.Args[0])
+	}
 
+	flag.StringVar(&confArgs, "config", "config.toml", "Config File")
+
+	radarrCommand := flag.NewFlagSet("radarr", flag.ExitOnError)
+	radarrPath := radarrCommand.String("url", "", "Url/IP of Radarr")
+	radarrApi := radarrCommand.String("api", "", "API of Radarrr")
+
+	sonarrCommand := flag.NewFlagSet("sonarr", flag.ExitOnError)
+	sonarrPath := sonarrCommand.String("url", "", "Url/IP of Sonarr")
+	sonarrApi := sonarrCommand.String("api", "", "API of Sonarr")
+
+	jackettCommand := flag.NewFlagSet("sonarr", flag.ExitOnError)
+	jackettPath := jackettCommand.String("url", "", "Url/IP of Jackett")
+	jackettApi := jackettCommand.String("api", "", "API of Jackett")
+
+	flag.Parse()
+
+	if _, err := toml.DecodeFile(confArgs, &params); err != nil {
+		log.Fatal(err)
+	}
+
+	if len(os.Args) == 1 {
+		fmt.Println("usage: jrs <command> [<args>]")
+		fmt.Println("The commands are: ")
+		fmt.Println(" radarr   Radarr options")
+		fmt.Println(" sonarr  Sonarr options")
+		fmt.Println(" jackett  Jackett options")
+		return
+	}
+
+	switch os.Args[1] {
+	case "radarr":
+		radarrCommand.Parse(os.Args[2:])
+	case "sonarr":
+		sonarrCommand.Parse(os.Args[2:])
+	case "jackett":
+		jackettCommand.Parse(os.Args[2:])
+	default:
+		fmt.Printf("%q is not valid command.\n", os.Args[1])
+		os.Exit(2)
+	}
+
+	if radarrCommand.Parsed() {
+		if *radarrPath == "" {
+			fmt.Println("Please supply the Radarr path using -url option.")
+			return
+		} else if *radarrApi == "" {
+			fmt.Println("Please supply the Sonarr path using -api option.")
+			return
+		}
+	}
+
+	if sonarrCommand.Parsed() {
+		if *sonarrPath == "" {
+			fmt.Println("Please supply the Radarr path using -url option.")
+			return
+		} else if *sonarrApi == "" {
+			fmt.Println("Please supply the Sonarr path using -api option.")
+			return
+		}
+	}
+
+	if jackettCommand.Parsed() {
+		if *jackettPath == "" {
+			fmt.Println("Please supply the Radarr path using -url option.")
+			return
+		} else if *jackettApi == "" {
+			fmt.Println("Please supply the Sonarr path using -api option.")
+			return
+		}
+	}
+
+	// fmt.Printf("Your message is sent to %q.\n", *recipientFlag)
+	// fmt.Printf("Message: %q.\n", *messageFlag)
+
+	// RadarrDeleteAllIndexers()
+	// RadarrAddAllIndexes()
+	// SonarrAddAllIndexes()
+	// SonarrTestAllIndexers()
+	// RadarrTestAllIndexers()
+	// a := app.NewApp(params)
+	// a.AddAllPublicIndexers()
 }
 
 // TODO http response 303 to be fixed

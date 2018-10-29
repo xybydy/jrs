@@ -30,7 +30,7 @@ func (s *Sonarr) GetHeaders() http.Header {
 
 func (s *Sonarr) MakeRequest(method string, body io.Reader, args ...string) (*http.Request, error) {
 	// TODO URL Base olmayinca cogu komut calismiyor. URL base eklemek gerekecek.
-	path := s.path + "/s/api"
+	path := s.path + "/api"
 
 	for _, arg := range args {
 		path = path + "/" + arg
