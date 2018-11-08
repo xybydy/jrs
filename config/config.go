@@ -28,3 +28,5 @@ func (c *Config) GetDestination(name string) *Destination {
 	}
 	return nil
 }
+
+var Params *Config

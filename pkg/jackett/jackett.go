@@ -2,10 +2,12 @@ package jackett
 
 import (
 	"fmt"
-	"jrs/config"
-	"jrs/utils"
 	"net/http"
 	"strings"
+
+	"jrs/config"
+	"jrs/utils"
+	"net/http/cookiejar"
 )
 
 var (
@@ -13,68 +15,20 @@ var (
 	root    = "/api"
 )
 
-type Caps struct {
-	ID   string `json:"ID"`
-	Name string `json:"Name"`
-}
-
-type Indexer struct {
-	ID               string
-	Name             string
-	Description      string
-	Type             string
-	Configured       bool
-	SiteLink         string `json:"site_link"`
-	Alternativelinks []string
-	Language         string
-	LastError        string `json:"last_error"`
-	Potatoenabled    bool
-	Caps             []Caps
-}
-
-type IndexerConfig []struct {
-	ID      string
-	Type    string            `json:",omitempty"`
-	Name    string            `json:",omitempty"`
-	Value   string            `json:",omitempty"`
-	Options map[string]string `json:",omitempty"`
-}
-
-func (ic *IndexerConfig) UpdateField(id, param string) {
-	for _, i := range *ic {
-		if i.ID == id {
-			i.Value = param
-		}
-	}
-}
-
-func (ic *IndexerConfig) SetCredentials(user, passwd string) {
-	ic.UpdateField("username", user)
-	ic.UpdateField("password", passwd)
-}
-
-type Indexers []Indexer
-
-func (i *Indexers) GetIndexer(id string) *Indexer {
-	for _, k := range *i {
-		if k.ID == id {
-			return &k
-		}
-	}
-	return nil
-}
-
 type Jackett struct {
-	version string
-	root    string
-	api     string
-	path    string
-	headers http.Header
+	version  string
+	root     string
+	api      string
+	path     string
+	indexers Indexers
+	headers  http.Header
+	client   *http.Client
 }
 
-func NewJackett(conf *config.Config) *Jackett {
+func New(conf *config.Config) *Jackett {
 	j := &Jackett{version: version, root: root, api: conf.Jackett.API, path: utils.BuildURL(conf.Jackett.IP, conf.Jackett.Port), headers: make(http.Header)}
 	j.headers.Add("Content-Type", "application/json")
+	j.client.Jar, _ = cookiejar.New(nil)
 	return j
 }
 
@@ -100,7 +54,7 @@ func (j *Jackett) GetAPI() string {
 	return j.api
 }
 
-func (j *Jackett) GetAllIndexers() *http.Request {
+func (j *Jackett) getAllIndexers() *http.Request {
 	path := j.getAPIPath("indexers", "")
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = j.headers
@@ -110,7 +64,7 @@ func (j *Jackett) GetAllIndexers() *http.Request {
 	return nil
 }
 
-func (j *Jackett) GetServerConfig() *http.Request {
+func (j *Jackett) getServerConfig() *http.Request {
 	path := j.getAPIPath("server", "config")
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = j.headers
@@ -119,7 +73,7 @@ func (j *Jackett) GetServerConfig() *http.Request {
 	return nil
 }
 
-func (j *Jackett) GetIndexerConfig(indexerID string) *http.Request {
+func (j *Jackett) getIndexerConfigReq(indexerID string) *http.Request {
 	path := j.getAPIPath("indexers", indexerID+"/config")
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = j.headers
@@ -128,7 +82,7 @@ func (j *Jackett) GetIndexerConfig(indexerID string) *http.Request {
 	return nil
 }
 
-func (j *Jackett) UpdateIndexerConfig(indexerID, config string) *http.Request {
+func (j *Jackett) updateIndexerConfig(indexerID, config string) *http.Request {
 	path := j.getAPIPath("indexers", indexerID+"/config")
 
 	if req, err := http.NewRequest("POST", path, strings.NewReader(config)); err == nil {
@@ -138,7 +92,7 @@ func (j *Jackett) UpdateIndexerConfig(indexerID, config string) *http.Request {
 	return nil
 }
 
-func (j *Jackett) DeleteIndexer(indexerID string) *http.Request {
+func (j *Jackett) deleteIndexer(indexerID string) *http.Request {
 	path := j.getAPIPath("indexers", indexerID)
 
 	if req, err := http.NewRequest("DELETE", path, nil); err == nil {
@@ -148,7 +102,7 @@ func (j *Jackett) DeleteIndexer(indexerID string) *http.Request {
 	return nil
 }
 
-func (j *Jackett) TestIndexer(indexerID string) *http.Request {
+func (j *Jackett) testIndexer(indexerID string) *http.Request {
 	path := j.getAPIPath("indexers", indexerID+"/test")
 	if req, err := http.NewRequest("POST", path, nil); err == nil {
 		req.Header = j.headers
@@ -157,7 +111,7 @@ func (j *Jackett) TestIndexer(indexerID string) *http.Request {
 	return nil
 }
 
-func (j *Jackett) ResultsForIndexer(indexerID, query string) *http.Request {
+func (j *Jackett) resultsForIndexer(indexerID, query string) *http.Request {
 	path := j.getAPIPath("indexers", indexerID+"/results?apikey="+j.api)
 
 	if req, err := http.NewRequest("GET", path, strings.NewReader(query)); err == nil {
@@ -167,7 +121,7 @@ func (j *Jackett) ResultsForIndexer(indexerID, query string) *http.Request {
 	return nil
 }
 
-func (j *Jackett) GetServerCache() *http.Request {
+func (j *Jackett) getServerCache() *http.Request {
 	path := j.getAPIPath("server", "cache")
 
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
@@ -177,7 +131,7 @@ func (j *Jackett) GetServerCache() *http.Request {
 	return nil
 }
 
-func (j *Jackett) GetServerLogs() *http.Request {
+func (j *Jackett) getServerLogs() *http.Request {
 	path := j.getAPIPath("server", "logs")
 
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
@@ -188,7 +142,7 @@ func (j *Jackett) GetServerLogs() *http.Request {
 	return nil
 }
 
-func (j *Jackett) UpdateServerConfig(serverConfig string) *http.Request {
+func (j *Jackett) updateServerConfig(serverConfig string) *http.Request {
 	path := j.getAPIPath("server", "config")
 	if req, err := http.NewRequest("POST", path, strings.NewReader(serverConfig)); err != nil {
 		req.Header = j.headers
@@ -197,7 +151,7 @@ func (j *Jackett) UpdateServerConfig(serverConfig string) *http.Request {
 	return nil
 }
 
-func (j *Jackett) UpdateServer() *http.Request {
+func (j *Jackett) updateServer() *http.Request {
 	path := j.getAPIPath("server", "update")
 	if req, err := http.NewRequest("GET", path, nil); err == nil {
 		req.Header = j.headers
@@ -206,7 +160,7 @@ func (j *Jackett) UpdateServer() *http.Request {
 	return nil
 }
 
-func (j *Jackett) UpdateAdminPassword(password string) *http.Request {
+func (j *Jackett) updateAdminPassword(password string) *http.Request {
 	path := j.getAPIPath("server", "adminpassword")
 
 	if req, err := http.NewRequest("POST", path, strings.NewReader(password)); err == nil {

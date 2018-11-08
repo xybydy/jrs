@@ -3,11 +3,12 @@ package sonarr
 import (
 	"fmt"
 	"io"
-	"jrs/config"
-	"jrs/utils"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"jrs/config"
+	"jrs/utils"
 )
 
 type Sonarr struct {
@@ -28,7 +29,7 @@ func (s *Sonarr) GetHeaders() http.Header {
 	return s.headers
 }
 
-func (s *Sonarr) MakeRequest(method string, body io.Reader, args ...string) (*http.Request, error) {
+func (s *Sonarr) BuildRequest(method string, body io.Reader, args ...string) (*http.Request, error) {
 	// TODO URL Base olmayinca cogu komut calismiyor. URL base eklemek gerekecek.
 	path := s.path + "/api"
 
@@ -46,7 +47,7 @@ func (s *Sonarr) MakeRequest(method string, body io.Reader, args ...string) (*ht
 
 func (s *Sonarr) Calendar() (*http.Request, error) {
 	// path := s.getAPIPath("calendar", "")
-	if req, err := s.MakeRequest("GET", nil, "calendar"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "calendar"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -55,7 +56,7 @@ func (s *Sonarr) Calendar() (*http.Request, error) {
 
 func (s *Sonarr) GetOngoingCommands() (*http.Request, error) {
 	// path := s.getAPIPath("command", "")
-	if req, err := s.MakeRequest("GET", nil, "command"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -64,7 +65,7 @@ func (s *Sonarr) GetOngoingCommands() (*http.Request, error) {
 
 func (s *Sonarr) GetCommandStatus(id string) (*http.Request, error) {
 	// path := s.getAPIPath("command", id)
-	if req, err := s.MakeRequest("GET", nil, "command", id); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "command", id); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -81,7 +82,7 @@ func (s *Sonarr) RefreshSeries(id string) (*http.Request, error) {
 
 	// path := s.getAPIPath("command", "")
 
-	if req, err := s.MakeRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
+	if req, err := s.BuildRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -99,7 +100,7 @@ func (s *Sonarr) RescanSeries(id string) (*http.Request, error) {
 
 	// path := s.getAPIPath("command", "")
 
-	if req, err := s.MakeRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
+	if req, err := s.BuildRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -118,7 +119,7 @@ func (s *Sonarr) EpisodeSearch(ids []int) (*http.Request, error) {
 	}
 
 	// path := s.getAPIPath("command", "")
-	if req, err := s.MakeRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
+	if req, err := s.BuildRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -133,7 +134,7 @@ func (s *Sonarr) SeasonSearch(seriesID, seasonNumber string) (*http.Request, err
 	data.Add("seasonNumber", seasonNumber)
 
 	// path := s.getAPIPath("command", "")
-	if req, err := s.MakeRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
+	if req, err := s.BuildRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -147,7 +148,7 @@ func (s *Sonarr) SeriesSearch(seriesID string) (*http.Request, error) {
 	data.Add("seriesId", seriesID)
 
 	// path := s.getAPIPath("command", "")
-	if req, err := s.MakeRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
+	if req, err := s.BuildRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -160,7 +161,7 @@ func (s *Sonarr) RssSync() (*http.Request, error) {
 	data.Add("name", "rsssync")
 
 	// path := s.getAPIPath("command", "")
-	if req, err := s.MakeRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
+	if req, err := s.BuildRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -179,7 +180,7 @@ func (s *Sonarr) RenameFiles(files []int) (*http.Request, error) {
 	}
 
 	// path := s.getAPIPath("command", "")
-	if req, err := s.MakeRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
+	if req, err := s.BuildRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -198,7 +199,7 @@ func (s *Sonarr) RenameSeries(seriesIds []int) (*http.Request, error) {
 	}
 
 	// path := s.getAPIPath("command", "")
-	if req, err := s.MakeRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
+	if req, err := s.BuildRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -207,7 +208,7 @@ func (s *Sonarr) RenameSeries(seriesIds []int) (*http.Request, error) {
 
 func (s *Sonarr) DiskSpace() (*http.Request, error) {
 	// path := s.getAPIPath("diskspace", "")
-	if req, err := s.MakeRequest("POST", nil, "diskspace"); err == nil {
+	if req, err := s.BuildRequest("POST", nil, "diskspace"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -221,7 +222,7 @@ func (s *Sonarr) Backup() (*http.Request, error) {
 
 	// path := s.getAPIPath("command", "")
 
-	if req, err := s.MakeRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
+	if req, err := s.BuildRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -236,7 +237,7 @@ func (s *Sonarr) missingEpisodeSearch() (*http.Request, error) {
 
 	// path := s.getAPIPath("command", "")
 
-	if req, err := s.MakeRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
+	if req, err := s.BuildRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -250,7 +251,7 @@ func (s *Sonarr) GetShow(seriesID string) (*http.Request, error) {
 
 	// path := s.getAPIPath("episode", "")
 
-	if req, err := s.MakeRequest("GET", strings.NewReader(data.Encode()), "episode"); err == nil {
+	if req, err := s.BuildRequest("GET", strings.NewReader(data.Encode()), "episode"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -261,7 +262,7 @@ func (s *Sonarr) GetShow(seriesID string) (*http.Request, error) {
 func (s *Sonarr) GetEpisode(episodeID string) (*http.Request, error) {
 	// path := s.getAPIPath("episode", episodeID)
 
-	if req, err := s.MakeRequest("GET", nil, "episode", episodeID); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "episode", episodeID); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -278,7 +279,7 @@ func (s *Sonarr) GetEpisodeFiles(seriesID string) (*http.Request, error) {
 
 	// path := s.getAPIPath("episodefile", "")
 
-	if req, err := s.MakeRequest("GET", strings.NewReader(data.Encode()), "episodefile"); err == nil {
+	if req, err := s.BuildRequest("GET", strings.NewReader(data.Encode()), "episodefile"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -289,7 +290,7 @@ func (s *Sonarr) GetEpisodeFiles(seriesID string) (*http.Request, error) {
 func (s *Sonarr) GetShowFiles(id string) (*http.Request, error) {
 	// path := s.getAPIPath("episodefile", id)
 
-	if req, err := s.MakeRequest("GET", nil, "episodefile", id); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "episodefile", id); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -300,7 +301,7 @@ func (s *Sonarr) GetShowFiles(id string) (*http.Request, error) {
 func (s *Sonarr) DeleteEpisode(id string) (*http.Request, error) {
 	// path := s.getAPIPath("episodefile", id)
 
-	if req, err := s.MakeRequest("DELETE", nil, "episodefile", id); err == nil {
+	if req, err := s.BuildRequest("DELETE", nil, "episodefile", id); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -331,7 +332,7 @@ func (s *Sonarr) History(sortKey, page, pageSize, sortDir string) (*http.Request
 
 	// path := s.getAPIPath("history", "")
 
-	if req, err := s.MakeRequest("GET", nil, "history"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "history"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -362,7 +363,7 @@ func (s *Sonarr) WantedMissing(sortKey, page, pageSize, sortDir string) (*http.R
 
 	// path := s.getAPIPath("wanted", "missing")
 
-	if req, err := s.MakeRequest("GET", nil, "wanted", "missing"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "wanted", "missing"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -373,7 +374,7 @@ func (s *Sonarr) WantedMissing(sortKey, page, pageSize, sortDir string) (*http.R
 func (s *Sonarr) Queue() (*http.Request, error) {
 	// path := s.getAPIPath("queue", "")
 
-	if req, err := s.MakeRequest("GET", nil, "queue"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "queue"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -394,7 +395,7 @@ func (s *Sonarr) RemoveDownload(id string, blacklist bool) (*http.Request, error
 
 	// path := s.getAPIPath("queue", "")
 
-	if req, err := s.MakeRequest("GET", strings.NewReader(data.Encode()), "queue"); err == nil {
+	if req, err := s.BuildRequest("GET", strings.NewReader(data.Encode()), "queue"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -405,7 +406,7 @@ func (s *Sonarr) RemoveDownload(id string, blacklist bool) (*http.Request, error
 func (s *Sonarr) GetProfiles() (*http.Request, error) {
 	// path := s.getAPIPath("profile", "")
 
-	if req, err := s.MakeRequest("GET", nil, "profile"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "profile"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -414,7 +415,7 @@ func (s *Sonarr) GetProfiles() (*http.Request, error) {
 }
 
 func (s *Sonarr) ConfigMediaManagement() (*http.Request, error) { // same
-	if req, err := s.MakeRequest("GET", nil, "config", "mediamanagement"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "config", "mediamanagement"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -422,7 +423,7 @@ func (s *Sonarr) ConfigMediaManagement() (*http.Request, error) { // same
 }
 
 func (s *Sonarr) ConfigNaming() (*http.Request, error) { // same
-	if req, err := s.MakeRequest("GET", nil, "config", "naming"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "config", "naming"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -431,7 +432,7 @@ func (s *Sonarr) ConfigNaming() (*http.Request, error) { // same
 }
 
 func (s *Sonarr) ConfigIndexer() (*http.Request, error) { // same
-	if req, err := s.MakeRequest("GET", nil, "config", "indexer"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "config", "indexer"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -439,7 +440,7 @@ func (s *Sonarr) ConfigIndexer() (*http.Request, error) { // same
 }
 
 func (s *Sonarr) ConfigDownloadClient() (*http.Request, error) { // same
-	if req, err := s.MakeRequest("GET", nil, "config", "downloadclient"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "config", "downloadclient"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -447,7 +448,7 @@ func (s *Sonarr) ConfigDownloadClient() (*http.Request, error) { // same
 }
 
 func (s *Sonarr) GetDownloadClient() (*http.Request, error) { // same
-	if req, err := s.MakeRequest("GET", nil, "downloadclient"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "downloadclient"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -455,7 +456,7 @@ func (s *Sonarr) GetDownloadClient() (*http.Request, error) { // same
 }
 
 func (s *Sonarr) ConfigNotification() (*http.Request, error) { // same
-	if req, err := s.MakeRequest("GET", nil, "config", "notification"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "config", "notification"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -463,7 +464,7 @@ func (s *Sonarr) ConfigNotification() (*http.Request, error) { // same
 }
 
 func (s *Sonarr) ConfigHost() (*http.Request, error) { // same
-	if req, err := s.MakeRequest("GET", nil, "config", "host"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "config", "host"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -471,7 +472,7 @@ func (s *Sonarr) ConfigHost() (*http.Request, error) { // same
 }
 
 func (s *Sonarr) ConfigUI() (*http.Request, error) { // same
-	if req, err := s.MakeRequest("GET", nil, "config", "ui"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "config", "ui"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -479,7 +480,7 @@ func (s *Sonarr) ConfigUI() (*http.Request, error) { // same
 }
 
 func (s *Sonarr) ConfigNetImport() (*http.Request, error) {
-	if req, err := s.MakeRequest("GET", nil, "config", "netimport"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "config", "netimport"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -487,7 +488,7 @@ func (s *Sonarr) ConfigNetImport() (*http.Request, error) {
 }
 
 func (s *Sonarr) GetNetImport() (*http.Request, error) {
-	if req, err := s.MakeRequest("GET", nil, "netimport"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "netimport"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -495,7 +496,7 @@ func (s *Sonarr) GetNetImport() (*http.Request, error) {
 }
 
 func (s *Sonarr) ConfigProfile() (*http.Request, error) { // same
-	if req, err := s.MakeRequest("GET", nil, "profile"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "profile"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -503,7 +504,7 @@ func (s *Sonarr) ConfigProfile() (*http.Request, error) { // same
 }
 
 func (s *Sonarr) ConfigDelayProfile() (*http.Request, error) { // same
-	if req, err := s.MakeRequest("GET", nil, "delayprofile"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "delayprofile"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -511,7 +512,7 @@ func (s *Sonarr) ConfigDelayProfile() (*http.Request, error) { // same
 }
 
 func (s *Sonarr) ConfigQualityDefinition() (*http.Request, error) { // same
-	if req, err := s.MakeRequest("GET", nil, "qualitydefinition"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "qualitydefinition"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -519,7 +520,7 @@ func (s *Sonarr) ConfigQualityDefinition() (*http.Request, error) { // same
 }
 
 func (s *Sonarr) GetIndexers() (*http.Request, error) { // same
-	if req, err := s.MakeRequest("GET", nil, "indexer"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "indexer"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -527,7 +528,7 @@ func (s *Sonarr) GetIndexers() (*http.Request, error) { // same
 }
 
 func (s *Sonarr) GetRemotePathMapping() (*http.Request, error) {
-	if req, err := s.MakeRequest("GET", nil, "remotePathMapping"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "remotePathMapping"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -535,7 +536,7 @@ func (s *Sonarr) GetRemotePathMapping() (*http.Request, error) {
 }
 
 func (s *Sonarr) GetRootFolder() (*http.Request, error) {
-	if req, err := s.MakeRequest("GET", nil, "rootfolder"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "rootfolder"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -543,7 +544,7 @@ func (s *Sonarr) GetRootFolder() (*http.Request, error) {
 }
 
 func (s *Sonarr) GetExclusions() (*http.Request, error) {
-	if req, err := s.MakeRequest("GET", nil, "exclusions"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "exclusions"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -551,7 +552,7 @@ func (s *Sonarr) GetExclusions() (*http.Request, error) {
 }
 
 func (s *Sonarr) GetMetadata() (*http.Request, error) {
-	if req, err := s.MakeRequest("GET", nil, "metadata"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "metadata"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -559,7 +560,7 @@ func (s *Sonarr) GetMetadata() (*http.Request, error) {
 }
 
 func (s *Sonarr) GetIndexerSchema() (*http.Request, error) {
-	if req, err := s.MakeRequest("GET", nil, "indexer", "schema"); err == nil {
+	if req, err := s.BuildRequest("GET", nil, "indexer", "schema"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -568,7 +569,7 @@ func (s *Sonarr) GetIndexerSchema() (*http.Request, error) {
 
 func (s *Sonarr) DeleteIndexer(i IndexerSchema) (*http.Request, error) {
 	id := fmt.Sprintf("%v", i.ID)
-	if req, err := s.MakeRequest("DELETE", nil, "indexer", id); err == nil {
+	if req, err := s.BuildRequest("DELETE", nil, "indexer", id); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -576,7 +577,7 @@ func (s *Sonarr) DeleteIndexer(i IndexerSchema) (*http.Request, error) {
 }
 
 func (s *Sonarr) SetIndexer(i IndexerSchema) (*http.Request, error) {
-	if req, err := s.MakeRequest("POST", nil, "indexer"); err == nil {
+	if req, err := s.BuildRequest("POST", nil, "indexer"); err == nil {
 		return req, err
 	} else {
 		return nil, err

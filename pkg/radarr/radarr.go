@@ -5,11 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"jrs/config"
-	"jrs/utils"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"jrs/config"
+	"jrs/utils"
 )
 
 func New(c *config.Config) *Radarr {
@@ -20,7 +21,7 @@ func New(c *config.Config) *Radarr {
 	return r
 }
 
-func (r *Radarr) MakeRequest(method string, body io.Reader, args ...string) (*http.Request, error) {
+func (r *Radarr) BuildRequest(method string, body io.Reader, args ...string) (*http.Request, error) {
 	path := r.path + "/api"
 
 	for _, arg := range args {
@@ -38,7 +39,7 @@ func (r *Radarr) MakeRequest(method string, body io.Reader, args ...string) (*ht
 func (r *Radarr) Calendar() (*http.Request, error) {
 	// TODO start, end to be implemented
 	// path := r.getAPIPath("calendar", "")
-	if req, err := r.MakeRequest("GET", nil, "calendar"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "calendar"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -47,7 +48,7 @@ func (r *Radarr) Calendar() (*http.Request, error) {
 
 func (r *Radarr) DiskSpace() (*http.Request, error) {
 	// path := r.getAPIPath("diskspace", "")
-	if req, err := r.MakeRequest("GET", nil, "diskspace"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "diskspace"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -57,7 +58,7 @@ func (r *Radarr) DiskSpace() (*http.Request, error) {
 
 func (r *Radarr) GetOngoingCommands() (*http.Request, error) {
 	// path := r.getAPIPath("command", "")
-	if req, err := r.MakeRequest("GET", nil, "command"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -67,7 +68,7 @@ func (r *Radarr) GetOngoingCommands() (*http.Request, error) {
 
 func (r *Radarr) GetCommandStatus(id string) (*http.Request, error) {
 	// path := r.getAPIPath("command", id)
-	if req, err := r.MakeRequest("GET", nil, "command", id); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "command", id); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -84,7 +85,7 @@ func (r *Radarr) RefreshMovie(movieID string) (*http.Request, error) {
 
 	// path := r.getAPIPath("command", "")
 
-	if req, err := r.MakeRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
+	if req, err := r.BuildRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -102,7 +103,7 @@ func (r *Radarr) RescanMovie(movieID string) (*http.Request, error) {
 
 	// path := r.getAPIPath("command", "")
 
-	if req, err := r.MakeRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
+	if req, err := r.BuildRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -122,7 +123,7 @@ func (r *Radarr) MoviesSearch(movieIds []int) (*http.Request, error) {
 
 	// path := r.getAPIPath("command", "")
 
-	if req, err := r.MakeRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
+	if req, err := r.BuildRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -149,7 +150,7 @@ func (r *Radarr) DownloadedMoviesScan(path, downloadClient, importMode string) (
 
 	// reqPath := r.getAPIPath("command", "")
 
-	if req, err := r.MakeRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
+	if req, err := r.BuildRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -164,7 +165,7 @@ func (r *Radarr) RssSync() (*http.Request, error) {
 
 	// path := r.getAPIPath("command", "")
 
-	if req, err := r.MakeRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
+	if req, err := r.BuildRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -185,7 +186,7 @@ func (r *Radarr) RenameFiles(files []int) (*http.Request, error) {
 
 	// path := r.getAPIPath("command", "")
 
-	if req, err := r.MakeRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
+	if req, err := r.BuildRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -205,7 +206,7 @@ func (r *Radarr) RenameMovies(movieIds []int) (*http.Request, error) {
 
 	// path := r.getAPIPath("command", "")
 
-	if req, err := r.MakeRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
+	if req, err := r.BuildRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -232,7 +233,7 @@ func (r *Radarr) CutOffUnmetMoviesSearch(filterKey, filterValue string) (*http.R
 
 	// path := r.getAPIPath("command", "")
 
-	if req, err := r.MakeRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
+	if req, err := r.BuildRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -246,7 +247,7 @@ func (r *Radarr) NetImportSync() (*http.Request, error) {
 
 	// path := r.getAPIPath("command", "")
 
-	if req, err := r.MakeRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
+	if req, err := r.BuildRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -272,7 +273,7 @@ func (r *Radarr) MissingMoviesSearch(filterKey, filterValue string) (*http.Reque
 
 	// path := r.getAPIPath("command", "")
 
-	if req, err := r.MakeRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
+	if req, err := r.BuildRequest("POST", strings.NewReader(data.Encode()), "command"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -302,7 +303,7 @@ func (r *Radarr) History(sortKey, page, pageSize, sortDir string) (*http.Request
 
 	// path := r.getAPIPath("history", "")
 
-	if req, err := r.MakeRequest("GET", strings.NewReader(data.Encode()), "history"); err == nil {
+	if req, err := r.BuildRequest("GET", strings.NewReader(data.Encode()), "history"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -314,7 +315,7 @@ func (r *Radarr) History(sortKey, page, pageSize, sortDir string) (*http.Request
 func (r *Radarr) GetMovie(id string) (*http.Request, error) {
 	// path := r.getAPIPath("movie", id)
 
-	if req, err := r.MakeRequest("GET", nil, "movie", id); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "movie", id); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -343,7 +344,7 @@ func (r *Radarr) AddMovie(title, qualityProfileID, titleSlug, tmdbID, path strin
 
 	// reqPath := r.getAPIPath("movie")
 
-	if req, err := r.MakeRequest("GET", strings.NewReader(data.Encode()), "movie"); err == nil {
+	if req, err := r.BuildRequest("GET", strings.NewReader(data.Encode()), "movie"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -354,7 +355,7 @@ func (r *Radarr) AddMovie(title, qualityProfileID, titleSlug, tmdbID, path strin
 func (r *Radarr) RemoveMovie(id string) (*http.Request, error) {
 	// path := r.getAPIPath("movie", id)
 
-	if req, err := r.MakeRequest("DELETE", nil, "movie", id); err == nil {
+	if req, err := r.BuildRequest("DELETE", nil, "movie", id); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -370,7 +371,7 @@ func (r *Radarr) SearchByName(name string) (*http.Request, error) {
 
 	// path := r.getAPIPath("movie", "lookup")
 
-	if req, err := r.MakeRequest("GET", strings.NewReader(data.Encode()), "movie", "lookup"); err == nil {
+	if req, err := r.BuildRequest("GET", strings.NewReader(data.Encode()), "movie", "lookup"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -386,7 +387,7 @@ func (r *Radarr) SearchByTmdb(tmdbID string) (*http.Request, error) {
 
 	// path := r.getAPIPath("movie", "lookup", "tmdb")
 
-	if req, err := r.MakeRequest("GET", strings.NewReader(data.Encode()), "movie", "lookup", "tmdb"); err == nil {
+	if req, err := r.BuildRequest("GET", strings.NewReader(data.Encode()), "movie", "lookup", "tmdb"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -402,7 +403,7 @@ func (r *Radarr) SearchByImdb(imdbID string) (*http.Request, error) {
 
 	// path := r.getAPIPath("movie", "lookup", "imdb")
 
-	if req, err := r.MakeRequest("GET", strings.NewReader(data.Encode()), "movie", "lookup", "imdb"); err == nil {
+	if req, err := r.BuildRequest("GET", strings.NewReader(data.Encode()), "movie", "lookup", "imdb"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -413,7 +414,7 @@ func (r *Radarr) SearchByImdb(imdbID string) (*http.Request, error) {
 func (r *Radarr) SystemStatus() (*http.Request, error) {
 	// path := r.getAPIPath("system", "status")
 
-	if req, err := r.MakeRequest("GET", nil, "system", "status"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "system", "status"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -443,7 +444,7 @@ func (r *Radarr) SystemStatus() (*http.Request, error) {
 // "id": 1
 // }
 func (r *Radarr) ConfigMediaManagement() (*http.Request, error) {
-	if req, err := r.MakeRequest("GET", nil, "config", "mediamanagement"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "config", "mediamanagement"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -465,7 +466,7 @@ func (r *Radarr) ConfigMediaManagement() (*http.Request, error) {
 // "id": 1
 // }
 func (r *Radarr) ConfigNaming() (*http.Request, error) {
-	if req, err := r.MakeRequest("GET", nil, "config", "naming"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "config", "naming"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -487,7 +488,7 @@ func (r *Radarr) ConfigNaming() (*http.Request, error) {
 // "id": 1
 // }
 func (r *Radarr) ConfigIndexer() (*http.Request, error) {
-	if req, err := r.MakeRequest("GET", nil, "config", "indexer"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "config", "indexer"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -506,7 +507,7 @@ func (r *Radarr) ConfigIndexer() (*http.Request, error) {
 // "id": 1
 // }
 func (r *Radarr) ConfigDownloadClient() (*http.Request, error) {
-	if req, err := r.MakeRequest("GET", nil, "config", "downloadclient"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "config", "downloadclient"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -633,7 +634,7 @@ func (r *Radarr) ConfigDownloadClient() (*http.Request, error) {
 // "id": 1
 // }]
 func (r *Radarr) GetDownloadClient() (*http.Request, error) {
-	if req, err := r.MakeRequest("GET", nil, "downloadclient"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "downloadclient"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -652,7 +653,7 @@ func (r *Radarr) GetDownloadClient() (*http.Request, error) {
 // "id": 1
 // }
 func (r *Radarr) ConfigNotification() (*http.Request, error) {
-	if req, err := r.MakeRequest("GET", nil, "config", "notification"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "config", "notification"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -687,7 +688,7 @@ func (r *Radarr) ConfigNotification() (*http.Request, error) {
 // "id": 1
 // }
 func (r *Radarr) ConfigHost() (*http.Request, error) {
-	if req, err := r.MakeRequest("GET", nil, "config", "host"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "config", "host"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -706,7 +707,7 @@ func (r *Radarr) ConfigHost() (*http.Request, error) {
 // "id": 1
 // }
 func (r *Radarr) ConfigUI() (*http.Request, error) {
-	if req, err := r.MakeRequest("GET", nil, "config", "ui"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "config", "ui"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -724,7 +725,7 @@ func (r *Radarr) ConfigUI() (*http.Request, error) {
 // "id": 1
 // }
 func (r *Radarr) ConfigNetImport() (*http.Request, error) {
-	if req, err := r.MakeRequest("GET", nil, "config", "netimport"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "config", "netimport"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -732,7 +733,7 @@ func (r *Radarr) ConfigNetImport() (*http.Request, error) {
 }
 
 func (r *Radarr) GetNetImport() (*http.Request, error) {
-	if req, err := r.MakeRequest("GET", nil, "netimport"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "netimport"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -881,7 +882,7 @@ func (r *Radarr) GetNetImport() (*http.Request, error) {
 // "id": 1
 // }
 func (r *Radarr) ConfigProfile() (*http.Request, error) {
-	if req, err := r.MakeRequest("GET", nil, "profile"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "profile"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -901,7 +902,7 @@ func (r *Radarr) ConfigProfile() (*http.Request, error) {
 // }
 // ]
 func (r *Radarr) ConfigDelayProfile() (*http.Request, error) {
-	if req, err := r.MakeRequest("GET", nil, "delayprofile"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "delayprofile"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -1089,7 +1090,7 @@ func (r *Radarr) ConfigDelayProfile() (*http.Request, error) {
 // }
 // ]
 func (r *Radarr) ConfigQualityDefinition() (*http.Request, error) {
-	if req, err := r.MakeRequest("GET", nil, "qualitydefinition"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "qualitydefinition"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -1202,7 +1203,7 @@ func (r *Radarr) ConfigQualityDefinition() (*http.Request, error) {
 // "id": 13
 // }
 func (r *Radarr) GetIndexers() (*http.Request, error) {
-	if req, err := r.MakeRequest("GET", nil, "indexer"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "indexer"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -1217,7 +1218,7 @@ func (r *Radarr) GetIndexers() (*http.Request, error) {
 // "id": 1
 // }]
 func (r *Radarr) GetRemotePathMapping() (*http.Request, error) {
-	if req, err := r.MakeRequest("GET", nil, "remotePathMapping"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "remotePathMapping"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -1225,7 +1226,7 @@ func (r *Radarr) GetRemotePathMapping() (*http.Request, error) {
 }
 
 func (r *Radarr) GetRootFolder() (*http.Request, error) {
-	if req, err := r.MakeRequest("GET", nil, "rootfolder"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "rootfolder"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -1233,7 +1234,7 @@ func (r *Radarr) GetRootFolder() (*http.Request, error) {
 }
 
 func (r *Radarr) GetExclusions() (*http.Request, error) {
-	if req, err := r.MakeRequest("GET", nil, "exclusions"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "exclusions"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -1241,7 +1242,7 @@ func (r *Radarr) GetExclusions() (*http.Request, error) {
 }
 
 func (r *Radarr) GetMetadata() (*http.Request, error) {
-	if req, err := r.MakeRequest("GET", nil, "metadata"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "metadata"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -1249,7 +1250,7 @@ func (r *Radarr) GetMetadata() (*http.Request, error) {
 }
 
 func (r *Radarr) GetIndexerSchema() (*http.Request, error) {
-	if req, err := r.MakeRequest("GET", nil, "indexer", "schema"); err == nil {
+	if req, err := r.BuildRequest("GET", nil, "indexer", "schema"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -1257,7 +1258,7 @@ func (r *Radarr) GetIndexerSchema() (*http.Request, error) {
 }
 
 func (r *Radarr) SetIndexer(i IndexerSchema) (*http.Request, error) {
-	if req, err := r.MakeRequest("POST", nil, "indexer"); err == nil {
+	if req, err := r.BuildRequest("POST", nil, "indexer"); err == nil {
 		return req, err
 	} else {
 		return nil, err
@@ -1266,7 +1267,7 @@ func (r *Radarr) SetIndexer(i IndexerSchema) (*http.Request, error) {
 
 func (r *Radarr) DeleteIndexer(i IndexerSchema) (*http.Request, error) {
 	id := fmt.Sprintf("%v", i.ID)
-	if req, err := r.MakeRequest("DELETE", nil, "indexer", id); err == nil {
+	if req, err := r.BuildRequest("DELETE", nil, "indexer", id); err == nil {
 		return req, err
 	} else {
 		return nil, err

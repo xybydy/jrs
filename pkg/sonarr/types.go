@@ -24,17 +24,6 @@ type IndexerSchema struct {
 	Presets            []IndexerSchema
 }
 
-// func (i *IndexerSchema) UpdateFields(p ...api.Param) {
-// 	for _, k := range p {
-// 		index := strings.Index(k.Key, ";")
-// 		if index != -1 {
-// 			r := reflect.ValueOf(i)
-// 			f := reflect.Indirect(r).FieldByName(k.Key[:index])
-// 			fmt.Printf()
-// 		}
-// 	}
-// }
-
 type IndexerSchemas []IndexerSchema
 
 func (i *IndexerSchemas) GetTorznab() *IndexerSchema {
