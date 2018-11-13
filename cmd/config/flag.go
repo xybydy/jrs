@@ -1,7 +1,9 @@
 package config
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
+	"jrs/config"
 )
 
 var (
@@ -9,7 +11,7 @@ var (
 	api string
 )
 
-var config = &cobra.Command{
+var Config = &cobra.Command{
 	Use: "config",
 }
 
@@ -31,6 +33,10 @@ var jackett = &cobra.Command{
 
 var save = &cobra.Command{
 	Use: "save",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println(args[0])
+		config.Params.SaveFile(args[0])
+	},
 }
 
 func init() {
@@ -38,5 +44,5 @@ func init() {
 	sonarr.AddCommand(save)
 	jackett.AddCommand(save)
 	set.AddCommand(radarr, sonarr, jackett)
-	config.AddCommand(set)
+	Config.AddCommand(set)
 }

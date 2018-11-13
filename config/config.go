@@ -1,23 +1,28 @@
 package config
 
-import "strings"
+import (
+	"github.com/burntsushi/toml"
+	"log"
+	"os"
+	"path/filepath"
+	"reflect"
+	"strings"
+)
+
+var (
+	ConfPath = "config.toml"
+	Params   *Config
+)
 
 type Config struct {
-	Jackett Jackett
-	Dest    []Destination `toml:"destinations"`
+	Dest []Destination `toml:"destinations"`
 }
 
 type Destination struct {
 	Name string
-	IP   string
-	Port int
-	API  string
-}
-
-type Jackett struct {
-	IP   string
-	Port int
-	API  string
+	Ip   string
+	Port uint16
+	Api  string
 }
 
 func (c *Config) GetDestination(name string) *Destination {
@@ -29,4 +34,80 @@ func (c *Config) GetDestination(name string) *Destination {
 	return nil
 }
 
-var Params *Config
+func (c *Config) SaveFile(path string) error {
+	ext := filepath.Ext(path)
+	if ext == "" {
+		path = path + ".toml"
+	} else if ext != ".toml" {
+		log.Fatal("Config file does not have toml extension, please correct it")
+	}
+
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+
+	defer f.Close()
+	if err != nil {
+		return err
+	}
+
+	if err := toml.NewEncoder(f).Encode(c); err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	return nil
+}
+
+func (c *Config) ChangeParams(dest, param string, value interface{}) {
+	main := reflect.ValueOf(c)
+	mainElem := main.Elem()
+	items := mainElem.FieldByName("Dest")
+
+	for i := 0; i < items.Len(); i++ {
+		item := items.Index(i)
+		if item.FieldByName("Name").String() == strings.Title(dest) {
+			field := item.FieldByName(strings.Title(param))
+			if field.IsValid() {
+				if field.CanSet() {
+					if field.Kind() == reflect.Uint16 {
+						if reflect.TypeOf(value).String() == "int" {
+							newValue := uint64(value.(int))
+							field.SetUint(newValue)
+						}
+					}
+					if field.Kind() == reflect.String {
+						newValue := value.(string)
+						field.SetString(newValue)
+					}
+				}
+			}
+
+		}
+	}
+}
+
+func ParseConfigFile() {
+	if _, err := toml.DecodeFile(ConfPath, &Params); err != nil {
+		log.Fatal(err)
+	}
+
+	if len(Params.Dest) < 1 {
+		log.Fatal("There is no Destination configured.")
+	}
+
+	for _, dest := range Params.Dest {
+		if dest.Api == "" {
+			param := os.Getenv(strings.ToUpper(dest.Name))
+
+			if param != "" {
+				Params.GetDestination(dest.Name).Api = param
+			} else {
+				if len(Params.Dest) == 1 {
+					log.Fatalf("There is no %s API configured.", dest.Name)
+				} else {
+					log.Printf("There is no %s API configured.", dest.Name)
+				}
+			}
+		}
+
+	}
+}

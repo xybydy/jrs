@@ -1,23 +1,25 @@
 package cmd
 
 import (
-	"flag"
 	"github.com/spf13/cobra"
+	cfg "jrs/cmd/config"
+	"jrs/cmd/jackett"
+	"jrs/cmd/radarr"
+	"jrs/cmd/sonarr"
+	"jrs/config"
 )
 
-func ParseOptions() {
-	var configPath string
-	flag.StringVar(&configPath, "config", "config.toml", "Config file path")
-
+var RootCmd = &cobra.Command{Use: "jrs",
+	Run: func(cmd *cobra.Command, args []string) {
+	},
 }
-
-var RadarrCmd = &cobra.Command{
-	Use:   "radarr",
-	Short: "Radarr commands",
-}
-
-var RootCmd = &cobra.Command{Use: "jrs"}
 
 func init() {
-	RootCmd.AddCommand(RadarrCmd)
+	RootCmd.PersistentFlags().StringVarP(&config.ConfPath, "config", "c", "config.toml", "Config file path")
+	config.ParseConfigFile()
+
+	RootCmd.AddCommand(radarr.Cmd)
+	RootCmd.AddCommand(sonarr.Cmd)
+	RootCmd.AddCommand(jackett.Cmd)
+	RootCmd.AddCommand(cfg.Config)
 }

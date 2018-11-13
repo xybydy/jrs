@@ -1,23 +1,24 @@
 package radarr
 
 import (
-	"flag"
+	"fmt"
 	"github.com/spf13/cobra"
 )
 
-func ParseOptions() {
-	var configPath string
-	flag.StringVar(&configPath, "config", "config.toml", "Config file path")
-
-}
-
-var RadarrCmd = &cobra.Command{
+var Cmd = &cobra.Command{
 	Use:   "radarr",
 	Short: "Radarr commands",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println(cmd.Flag("config").Value)
+	},
 }
 
-var RootCmd = &cobra.Command{Use: "jrs"}
-
 func init() {
-	RootCmd.AddCommand(RadarrCmd)
+	// url := Cmd.Flags().StringP("url", "u", "http://localhost:7878", "Radarr URL")
+	// api := Cmd.Flags().StringP("api", "a", "", "API Key")
+	//
+	// if *url != "" {
+	// 	matched := utils.SplitUrl(*url)
+	//
+	// }
 }
