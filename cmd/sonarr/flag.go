@@ -7,6 +7,8 @@ import (
 var Cmd = &cobra.Command{
 	Use:   "sonarr",
 	Short: "Sonarr commands",
+	Run: func(cmd *cobra.Command, args []string) {
+	},
 }
 
 func init() {

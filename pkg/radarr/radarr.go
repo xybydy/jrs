@@ -10,12 +10,11 @@ import (
 	"strings"
 
 	"jrs/config"
-	"jrs/utils"
 )
 
 func New(c *config.Config) *Radarr {
-	conf := c.GetDestination("Radarr")
-	r := &Radarr{conf.API, utils.BuildURL(conf.IP, conf.Port), http.Header{}}
+	conf := c.GetDestination("radarr")
+	r := &Radarr{conf.Api, conf.Path, http.Header{}}
 	r.headers.Add("Content-Type", "application/json")
 	r.headers.Add("X-Api-Key", r.api)
 	return r

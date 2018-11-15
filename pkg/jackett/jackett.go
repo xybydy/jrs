@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"jrs/config"
-	"jrs/utils"
 	"net/http/cookiejar"
 )
 
@@ -26,8 +25,10 @@ type Jackett struct {
 }
 
 func New(conf *config.Config) *Jackett {
-	j := &Jackett{version: version, root: root, api: conf.Jackett.API, path: utils.BuildURL(conf.Jackett.IP, conf.Jackett.Port), headers: make(http.Header)}
+	c := conf.GetDestination("jackett")
+	j := &Jackett{version: version, root: root, api: c.Api, path: c.Path, headers: make(http.Header)}
 	j.headers.Add("Content-Type", "application/json")
+	j.client = new(http.Client)
 	j.client.Jar, _ = cookiejar.New(nil)
 	return j
 }

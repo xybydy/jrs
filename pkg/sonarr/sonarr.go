@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"jrs/config"
-	"jrs/utils"
 )
 
 type Sonarr struct {
@@ -19,7 +18,7 @@ type Sonarr struct {
 
 func New(c *config.Config) *Sonarr {
 	conf := c.GetDestination("Sonarr")
-	s := &Sonarr{conf.API, utils.BuildURL(conf.IP, conf.Port), http.Header{}}
+	s := &Sonarr{conf.Api, conf.Path, http.Header{}}
 	s.headers.Add("Content-Type", "application/json")
 	s.headers.Add("X-Api-Key", s.api)
 	return s

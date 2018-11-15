@@ -20,8 +20,7 @@ type Config struct {
 
 type Destination struct {
 	Name string
-	Ip   string
-	Port uint16
+	Path string
 	Api  string
 }
 

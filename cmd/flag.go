@@ -1,25 +1,24 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
-	cfg "jrs/cmd/config"
-	"jrs/cmd/jackett"
-	"jrs/cmd/radarr"
-	"jrs/cmd/sonarr"
 	"jrs/config"
+	"log"
 )
 
-var RootCmd = &cobra.Command{Use: "jrs",
-	Run: func(cmd *cobra.Command, args []string) {
-	},
-}
+func CheckConfig(dest, url, api string) {
+	app := config.Params.GetDestination(dest)
 
-func init() {
-	RootCmd.PersistentFlags().StringVarP(&config.ConfPath, "config", "c", "config.toml", "Config file path")
-	config.ParseConfigFile()
+	if app.Path == "" && url == "" {
+		log.Fatalf("There is path specified for %s. Please set config file or provide path with --path option.", dest)
+	}
+	if app.Api == "" && api == "" {
+		log.Fatalf("There is api specified for %s. Please set config file or provide api with --api option.", api)
+	}
 
-	RootCmd.AddCommand(radarr.Cmd)
-	RootCmd.AddCommand(sonarr.Cmd)
-	RootCmd.AddCommand(jackett.Cmd)
-	RootCmd.AddCommand(cfg.Config)
+	if url != "" {
+		config.Params.ChangeParams(dest, "path", url)
+	}
+	if api != "" {
+		config.Params.ChangeParams(dest, "api", api)
+	}
 }

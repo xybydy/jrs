@@ -130,11 +130,11 @@
 package main
 
 import (
-	"jrs/cmd"
+	"jrs/cmd/root"
 )
 
 func main() {
-	cmd.RootCmd.Execute()
+	root.RootCmd.Execute()
 	// config.ParseConfigFile()
 
 	// main := reflect.ValueOf(config.Params)
