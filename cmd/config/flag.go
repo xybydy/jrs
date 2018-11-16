@@ -1,8 +1,9 @@
 package config
 
 import (
-	"github.com/spf13/cobra"
 	"jrs/config"
+
+	"github.com/spf13/cobra"
 )
 
 var (

@@ -1,10 +1,11 @@
 package jackett
 
 import (
-	"github.com/spf13/cobra"
 	cmd2 "jrs/cmd"
 	"jrs/config"
 	"jrs/pkg/jackett"
+
+	"github.com/spf13/cobra"
 )
 
 var (
@@ -67,7 +68,7 @@ var addAllPublicIndexers = &cobra.Command{
 }
 
 func init() {
-	Cmd.PersistentFlags().StringVarP(&url, "url", "u", "http://localhost:9117", "Jackett URL")
+	Cmd.PersistentFlags().StringVarP(&url, "url", "u", "", "Jackett URL")
 	Cmd.PersistentFlags().StringVarP(&api, "api", "a", "", "API Key")
 
 	addIndexer.Flags().StringVarP(&user, "username", "s", "", "Tracker Username")

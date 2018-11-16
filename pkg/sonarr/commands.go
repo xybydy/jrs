@@ -11,19 +11,19 @@ import (
 	"net/http"
 )
 
-type client struct {
+type Client struct {
 	s      *Sonarr
 	client *http.Client
 }
 
-func NewClient() *client {
-	c := new(client)
+func NewClient() *Client {
+	c := new(Client)
 	c.s = New(config.Params)
 	c.client = new(http.Client)
 	return c
 }
 
-func (c *client) TestAllIndexers() {
+func (c *Client) TestAllIndexers() {
 	var schemas IndexerSchemas
 
 	req, _ := c.s.GetIndexers()
@@ -52,10 +52,8 @@ func (c *client) TestAllIndexers() {
 	}
 }
 
-func (c *client) AddAllIndexers() {
+func (c *Client) AddAllIndexers(j *jackett.Jackett) {
 	var schema IndexerSchemas
-
-	j := jackett.New(config.Params)
 
 	inx := j.GetConfiguredIndexers()
 	schm, err := c.s.GetIndexerSchema()
@@ -95,7 +93,7 @@ func (c *client) AddAllIndexers() {
 		}
 		data, err := json.Marshal(torznab)
 		if err != nil {
-			log.Fatalf("s", err)
+			log.Fatalf("%s", err)
 		}
 		req, _ := c.s.BuildRequest("POST", bytes.NewBuffer(data), "indexer")
 
@@ -110,7 +108,7 @@ func (c *client) AddAllIndexers() {
 
 }
 
-func (c *client) DeleteAllIndexers() {
+func (c *Client) DeleteAllIndexers() {
 	var schemas IndexerSchemas
 
 	req, err := c.s.GetIndexers()

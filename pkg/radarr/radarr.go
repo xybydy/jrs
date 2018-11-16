@@ -1172,7 +1172,7 @@ func (r *Radarr) ConfigQualityDefinition() (*http.Request, error) {
 // "order": 7,
 // "name": "SeedCriteria.SeedRatio",
 // "label": "Seed Ratio",
-// "helpText": "The ratio a torrent should reach before stopping, empty is download client's default",
+// "helpText": "The ratio a torrent should reach before stopping, empty is download Client's default",
 // "type": "textbox",
 // "advanced": true
 // },
@@ -1181,7 +1181,7 @@ func (r *Radarr) ConfigQualityDefinition() (*http.Request, error) {
 // "name": "SeedCriteria.SeedTime",
 // "label": "Seed Time",
 // "unit": "minutes",
-// "helpText": "The time a torrent should be seeded before stopping, empty is download client's default",
+// "helpText": "The time a torrent should be seeded before stopping, empty is download Client's default",
 // "type": "textbox",
 // "advanced": true
 // },
@@ -1190,7 +1190,7 @@ func (r *Radarr) ConfigQualityDefinition() (*http.Request, error) {
 // "name": "SeedCriteria.SeasonPackSeedTime",
 // "label": "Season-Pack Seed Time",
 // "unit": "minutes",
-// "helpText": "The time a torrent should be seeded before stopping, empty is download client's default",
+// "helpText": "The time a torrent should be seeded before stopping, empty is download Client's default",
 // "type": "textbox",
 // "advanced": true
 // }
