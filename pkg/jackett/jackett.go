@@ -33,11 +33,11 @@ func New(conf *config.Config) *Jackett {
 	return j
 }
 
-func (j *Jackett) getAPIPath(category, action string, args ...string) string {
+func (j *Jackett) getAPIPath(category, action string) string {
 	path := j.path + "/api/v" + j.version + "/" + category
 
 	if action != "" {
-		path = path + "/" + action
+		path += "/" + action
 	}
 
 	return path

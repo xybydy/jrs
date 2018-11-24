@@ -1,12 +1,13 @@
 package config
 
 import (
-	"github.com/burntsushi/toml"
 	"log"
 	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
+
+	"github.com/burntsushi/toml"
 )
 
 var (
@@ -36,17 +37,17 @@ func (c *Config) GetDestination(name string) *Destination {
 func (c *Config) SaveFile(path string) error {
 	ext := filepath.Ext(path)
 	if ext == "" {
-		path = path + ".toml"
+		path += ".toml"
 	} else if ext != ".toml" {
 		log.Fatal("Config file does not have toml extension, please correct it")
 	}
 
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 
-	defer f.Close()
 	if err != nil {
 		return err
 	}
+	defer f.Close()
 
 	if err := toml.NewEncoder(f).Encode(c); err != nil {
 		log.Fatal(err)

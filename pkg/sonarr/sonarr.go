@@ -386,7 +386,7 @@ func (s *Sonarr) RemoveDownload(id string, blacklist bool) (*http.Request, error
 
 	data.Add("id", id)
 
-	if blacklist == true {
+	if blacklist {
 		data.Add("blacklist", "true")
 	} else {
 		data.Add("blacklist", "false")

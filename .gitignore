@@ -97,3 +97,4 @@ fabric.properties
 vendor/
 config.toml
 *_test.go
+.vscode/

@@ -2,6 +2,7 @@ package config
 
 import (
 	"jrs/config"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -29,7 +30,10 @@ var radarr = &cobra.Command{
 		if api != "" {
 			config.Params.ChangeParams("radarr", "api", api)
 		}
-		config.Params.SaveFile(args[0])
+		err := config.Params.SaveFile(args[0])
+		if err != nil {
+			log.Fatalf("%s", err)
+		}
 
 	},
 	Args: cobra.ExactArgs(1),
@@ -44,7 +48,10 @@ var sonarr = &cobra.Command{
 		if api != "" {
 			config.Params.ChangeParams("sonarr", "api", api)
 		}
-		config.Params.SaveFile(args[0])
+		err := config.Params.SaveFile(args[0])
+		if err != nil {
+			log.Fatalf("%s", err)
+		}
 
 	},
 	Args: cobra.ExactArgs(1),
@@ -59,7 +66,10 @@ var jackett = &cobra.Command{
 		if api != "" {
 			config.Params.ChangeParams("jackett", "api", api)
 		}
-		config.Params.SaveFile(args[0])
+		err := config.Params.SaveFile(args[0])
+		if err != nil {
+			log.Fatalf("%s", err)
+		}
 
 	},
 	Args: cobra.ExactArgs(1),

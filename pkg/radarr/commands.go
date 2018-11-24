@@ -35,7 +35,10 @@ func (c *Client) TestAllIndexers() {
 	}
 	defer resp.Body.Close()
 
-	json.Unmarshal(body, &schemas)
+	err = json.Unmarshal(body, &schemas)
+	if err != nil {
+		log.Fatalf("%s", err)
+	}
 
 	for _, i := range schemas {
 		data, err := json.Marshal(i)
@@ -73,7 +76,10 @@ func (c *Client) AddAllIndexers(j *jackett.Jackett) {
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
-	json.Unmarshal(body, &schema)
+	err = json.Unmarshal(body, &schema)
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
 
 	torznab := schema.GetTorznab()
 
@@ -129,11 +135,17 @@ func (c *Client) DeleteAllIndexers() {
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
-	json.Unmarshal(data, &schemas)
+	err = json.Unmarshal(data, &schemas)
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
 
 	for _, i := range schemas {
 		req, _ = c.r.DeleteIndexer(i)
-		c.client.Do(req)
+		_, err = c.client.Do(req)
+		if err != nil {
+			fmt.Printf("%v", err)
+		}
 	}
 	resp.Body.Close()
 }

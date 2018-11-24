@@ -35,7 +35,10 @@ func (c *Client) TestAllIndexers() {
 	}
 	defer resp.Body.Close()
 
-	json.Unmarshal(body, &schemas)
+	err = json.Unmarshal(body, &schemas)
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
 
 	for _, i := range schemas {
 		data, err := json.Marshal(i)
@@ -129,7 +132,10 @@ func (c *Client) DeleteAllIndexers() {
 
 	for _, i := range schemas {
 		req, _ = c.s.DeleteIndexer(i)
-		c.client.Do(req)
+		err = c.client.Do(req)
+		if err != nil {
+			fmt.Printf("%v", err)
+		}
 	}
 	resp.Body.Close()
 }

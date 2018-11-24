@@ -17,7 +17,10 @@ func (j *Jackett) GetAllIndexers() {
 	defer resp.Body.Close()
 
 	msg, _ := ioutil.ReadAll(resp.Body)
-	json.Unmarshal(msg, &j.indexers)
+	err = json.Unmarshal(msg, &j.indexers)
+	if err != nil {
+		log.Fatalf("%s", err)
+	}
 }
 
 func (j *Jackett) GetConfiguredIndexers() Indexers {
@@ -26,7 +29,7 @@ func (j *Jackett) GetConfiguredIndexers() Indexers {
 		j.GetAllIndexers()
 	}
 	for _, i := range j.indexers {
-		if i.Configured == true {
+		if i.Configured {
 			inx = append(inx, i)
 		}
 	}
@@ -57,7 +60,10 @@ func (j *Jackett) AddIndexer(id, user, passwd string) {
 	if index := j.indexers.GetIndexer(id); index != nil {
 		if msg, err := j.getIndexerConfig(index); err == nil {
 			var conf IndexerConfig
-			json.Unmarshal(msg, &conf)
+			err = json.Unmarshal(msg, &conf)
+			if err != nil {
+				log.Fatalf("%s", err)
+			}
 			conf.SetCredentials(user, passwd)
 
 			mrs, err := json.Marshal(conf)
@@ -98,7 +104,7 @@ func (j *Jackett) AddAllPublicIndexers() {
 
 	for _, i := range j.indexers {
 
-		if i.Type == "public" && i.Configured == false {
+		if i.Type == "public" && !i.Configured {
 			fmt.Printf("Posting %s\n", i.Name)
 
 			msg, err := j.getIndexerConfig(&i)
@@ -112,7 +118,7 @@ func (j *Jackett) AddAllPublicIndexers() {
 			}
 			defer resp.Body.Close()
 
-			msg, err = ioutil.ReadAll(resp.Body)
+			_, err = ioutil.ReadAll(resp.Body)
 			if err != nil {
 				fmt.Printf("%s\n", err)
 			}

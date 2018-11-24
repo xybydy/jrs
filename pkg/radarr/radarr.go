@@ -332,13 +332,16 @@ func (r *Radarr) AddMovie(title, qualityProfileID, titleSlug, tmdbID, path strin
 	data.Add("titleSlug", titleSlug)
 	data.Add("tmdbId ", tmdbID)
 
-	if monitored == true {
+	if monitored {
 		data.Add("monitored", "true")
 	} else {
 		data.Add("monitored", "false")
 	}
 
-	json.NewEncoder(img).Encode(images)
+	err := json.NewEncoder(img).Encode(images)
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
 	data.Add("images", img.String())
 
 	// reqPath := r.getAPIPath("movie")
