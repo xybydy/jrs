@@ -1,7 +1,7 @@
 package jackett
 
 import (
-	cmd2 "jrs/cmd"
+	"jrs/cmd"
 	"jrs/config"
 	"jrs/pkg/jackett"
 
@@ -26,10 +26,10 @@ func createApp() {
 var Cmd = &cobra.Command{
 	Use:   "jackett",
 	Short: "Jackett commands",
-	Run: func(cmd *cobra.Command, args []string) {
-		cmd2.CheckConfig("jackett", url, api)
+	Run: func(c *cobra.Command, args []string) {
+		cmd.CheckConfig("jackett", url, api)
 	},
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+	PersistentPreRun: func(c *cobra.Command, args []string) {
 		createApp()
 	},
 }
@@ -37,7 +37,7 @@ var Cmd = &cobra.Command{
 var getAllIndexers = &cobra.Command{
 	Use:   "get",
 	Short: "Command to get all configured indexers.",
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(c *cobra.Command, args []string) {
 		app.GetConfiguredIndexers()
 	},
 }
@@ -45,7 +45,7 @@ var getAllIndexers = &cobra.Command{
 var listIndexers = &cobra.Command{
 	Use:   "list",
 	Short: "Command to get all indexers in jackett",
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(c *cobra.Command, args []string) {
 		app.GetAllIndexers()
 	},
 }
@@ -54,7 +54,7 @@ var addIndexer = &cobra.Command{
 	Use:   "add",
 	Short: "Command to add indexer in jackett",
 	Long:  "Please use get command to get id of the indexer before adding it.",
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(c *cobra.Command, args []string) {
 		app.AddIndexer(id, user, pass)
 	},
 }
@@ -62,7 +62,7 @@ var addIndexer = &cobra.Command{
 var addAllPublicIndexers = &cobra.Command{
 	Use:   "addall",
 	Short: "Command to add all public indexers to jackett",
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(c *cobra.Command, args []string) {
 		app.AddAllPublicIndexers()
 	},
 }

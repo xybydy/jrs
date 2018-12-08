@@ -95,6 +95,7 @@ fabric.properties
 
 .idea/
 vendor/
-config.toml
+*.toml
 *_test.go
 .vscode/
+debug

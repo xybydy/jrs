@@ -3,6 +3,7 @@ package cmd
 import (
 	"jrs/config"
 	"log"
+	"strings"
 )
 
 func CheckConfig(dest, url, api string) {
@@ -16,9 +17,9 @@ func CheckConfig(dest, url, api string) {
 	}
 
 	if url != "" {
-		config.Params.ChangeParams(dest, "path", url)
+		config.Params.ChangeParams(strings.Title(dest), "Path", url)
 	}
 	if api != "" {
-		config.Params.ChangeParams(dest, "api", api)
+		config.Params.ChangeParams(strings.Title(dest), "Api", api)
 	}
 }

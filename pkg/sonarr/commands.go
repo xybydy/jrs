@@ -132,7 +132,7 @@ func (c *Client) DeleteAllIndexers() {
 
 	for _, i := range schemas {
 		req, _ = c.s.DeleteIndexer(i)
-		err = c.client.Do(req)
+		_, err = c.client.Do(req)
 		if err != nil {
 			fmt.Printf("%v", err)
 		}

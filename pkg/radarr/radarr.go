@@ -140,7 +140,8 @@ func (r *Radarr) DownloadedMoviesScan(path, downloadClient, importMode string) (
 	}
 
 	if downloadClient != "" {
-		data.Add("downloadClient", downloadClient) // (nzoid for sabnzbd, special 'drone' attribute value for nzbget, uppercase infohash for torrents),
+		// (nzoid for sabnzbd, special 'drone' attribute value for nzbget, uppercase infohash for torrents),
+		data.Add("downloadClient", downloadClient)
 	}
 
 	if importMode != "" {
@@ -263,7 +264,8 @@ func (r *Radarr) MissingMoviesSearch(filterKey, filterValue string) (*http.Reque
 	}
 
 	if filterValue == "" && filterKey == "" {
-		data.Add("filterValue", "true") // (Possible values with respect to the ones for the filterKey above: (true (recommended), false), (all), (available, released, inCinemas, announced)
+		// (Possible values with respect to the ones for the filterKey above: (true (recommended), false), (all), (available, released, inCinemas, announced)
+		data.Add("filterValue", "true")
 	} else {
 		data.Add("filterValue", filterValue)
 	}

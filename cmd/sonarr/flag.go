@@ -1,7 +1,7 @@
 package sonarr
 
 import (
-	cmd2 "jrs/cmd"
+	"jrs/cmd"
 	"jrs/config"
 	"jrs/pkg/jackett"
 	"jrs/pkg/sonarr"
@@ -19,15 +19,15 @@ var (
 var Cmd = &cobra.Command{
 	Use:   "sonarr",
 	Short: "Sonarr commands",
-	Run: func(cmd *cobra.Command, args []string) {
-		cmd2.CheckConfig("sonarr", url, api)
+	Run: func(c *cobra.Command, args []string) {
+		cmd.CheckConfig("sonarr", url, api)
 	},
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+	PersistentPreRun: func(c *cobra.Command, args []string) {
 		if url != "" {
-			config.Params.ChangeParams("sonarr", "path", url)
+			config.Params.ChangeParams("Sonarr", "path", url)
 		}
 		if api != "" {
-			config.Params.ChangeParams("sonarr", "api", api)
+			config.Params.ChangeParams("Sonarr", "api", api)
 		}
 
 		createApp()
@@ -37,7 +37,7 @@ var Cmd = &cobra.Command{
 var testIndexers = &cobra.Command{
 	Use:   "test",
 	Short: "Test all indexers added to Radarr",
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(c *cobra.Command, args []string) {
 		app.TestAllIndexers()
 	},
 }
@@ -45,10 +45,10 @@ var testIndexers = &cobra.Command{
 var addAllIndexers = &cobra.Command{
 	Use:   "add",
 	Short: "Add all available indexers to Radarr",
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(c *cobra.Command, args []string) {
 		app.AddAllIndexers(j)
 	},
-	PreRun: func(cmd *cobra.Command, args []string) {
+	PreRun: func(c *cobra.Command, args []string) {
 		if j == nil {
 			j = jackett.New(config.Params)
 		}
@@ -58,7 +58,7 @@ var addAllIndexers = &cobra.Command{
 var deleteAllIndexers = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete all indexers in Radarr",
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(c *cobra.Command, args []string) {
 		app.DeleteAllIndexers()
 	},
 }

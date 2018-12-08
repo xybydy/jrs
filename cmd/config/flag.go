@@ -3,13 +3,16 @@ package config
 import (
 	"jrs/config"
 	"log"
+	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 var (
-	url string
-	api string
+	url       string
+	api       string
+	flagExist bool
 )
 
 var Config = &cobra.Command{
@@ -21,58 +24,82 @@ var set = &cobra.Command{
 	Use: "set",
 }
 
+func saveSettings(app string, args []string) {
+	configFile := config.DEFAULT_CONFIG_PATH
+
+	if url == "" && api == "" {
+		log.Fatalf("There is no config parameters passed. Nothing to save!")
+	}
+
+	if url != "" {
+		config.Params.ChangeParams(strings.Title(app), "Path", url)
+	}
+	if api != "" {
+		config.Params.ChangeParams(strings.Title(app), "Api", api)
+	}
+
+	if len(args) > 0 {
+		configFile = args[0]
+		log.Printf("Saving config file as %s.", configFile)
+	} else {
+		log.Printf("There is no config file specified. Saving config file as %s.", configFile)
+	}
+
+	err := config.Params.SaveFile(configFile)
+	if err != nil {
+		log.Fatalf("%s", err)
+	}
+}
+
+func isFlagPassed(cmd *cobra.Command) {
+	checker := func(f *pflag.Flag) {
+		if f.Changed {
+			flagExist = true
+		}
+	}
+	cmd.LocalFlags().VisitAll(checker)
+}
+
 var radarr = &cobra.Command{
 	Use: "radarr",
 	Run: func(cmd *cobra.Command, args []string) {
-		if url != "" {
-			config.Params.ChangeParams("radarr", "path", url)
-		}
-		if api != "" {
-			config.Params.ChangeParams("radarr", "api", api)
-		}
-		err := config.Params.SaveFile(args[0])
-		if err != nil {
-			log.Fatalf("%s", err)
-		}
 
+		if isFlagPassed(cmd); !flagExist {
+			if err := cmd.Help(); err != nil {
+				log.Fatalln(err)
+			}
+		} else {
+			saveSettings("radarr", args)
+		}
 	},
-	Args: cobra.ExactArgs(1),
 }
 
 var sonarr = &cobra.Command{
 	Use: "sonarr",
 	Run: func(cmd *cobra.Command, args []string) {
-		if url != "" {
-			config.Params.ChangeParams("sonarr", "path", url)
-		}
-		if api != "" {
-			config.Params.ChangeParams("sonarr", "api", api)
-		}
-		err := config.Params.SaveFile(args[0])
-		if err != nil {
-			log.Fatalf("%s", err)
-		}
 
+		if isFlagPassed(cmd); !flagExist {
+			if err := cmd.Help(); err != nil {
+				log.Fatalln(err)
+			}
+		} else {
+			saveSettings("sonarr", args)
+		}
 	},
-	Args: cobra.ExactArgs(1),
 }
 
 var jackett = &cobra.Command{
 	Use: "jackett",
 	Run: func(cmd *cobra.Command, args []string) {
-		if url != "" {
-			config.Params.ChangeParams("jackett", "path", url)
-		}
-		if api != "" {
-			config.Params.ChangeParams("jackett", "api", api)
-		}
-		err := config.Params.SaveFile(args[0])
-		if err != nil {
-			log.Fatalf("%s", err)
-		}
 
+		if isFlagPassed(cmd); !flagExist {
+			if err := cmd.Help(); err != nil {
+				log.Fatalln(err)
+			}
+		} else {
+			saveSettings("jackett", args)
+		}
 	},
-	Args: cobra.ExactArgs(1),
 }
 
 func init() {

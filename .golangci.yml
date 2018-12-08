@@ -144,7 +144,6 @@ linters:
     - varcheck
     - ineffassign
     - deadcode
-    - typecheck
     - gosec
     - unconvert
     - dupl
@@ -163,4 +162,5 @@ linters:
   presets:
     - bugs
     - unused
-  fast: false
+  fast: true
+  verbose: true
