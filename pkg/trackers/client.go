@@ -1,33 +1,25 @@
-package radarr
+package trackers
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"jrs/config"
 	"jrs/pkg/jackett"
 	"log"
 	"net/http"
 )
 
 type Client struct {
-	r      *Radarr
-	client *http.Client
-}
-
-func NewClient() *Client {
-	c := new(Client)
-	c.r = New(config.Params)
-	c.client = new(http.Client)
-	return c
+	C      Tracker
+	Client *http.Client
 }
 
 func (c *Client) TestAllIndexers() {
 	var schemas IndexerSchemas
 
-	req, _ := c.r.GetIndexers()
-	resp, _ := c.client.Do(req)
+	req, _ := c.C.GetIndexers()
+	resp, _ := c.Client.Do(req)
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -37,7 +29,7 @@ func (c *Client) TestAllIndexers() {
 
 	err = json.Unmarshal(body, &schemas)
 	if err != nil {
-		log.Fatalf("%s", err)
+		fmt.Printf("%v", err)
 	}
 
 	for _, i := range schemas {
@@ -45,22 +37,21 @@ func (c *Client) TestAllIndexers() {
 		if err != nil {
 			log.Fatalf("%v\n", err)
 		}
-		req, err := c.r.BuildRequest("POST", bytes.NewBuffer(data), "indexer", "test")
+		req, err := c.C.BuildRequest("POST", bytes.NewBuffer(data), "indexer", "test")
 		if err != nil {
 			log.Fatalf("%v\n", err)
 		}
-		resp, _ := c.client.Do(req)
+		resp, _ := c.Client.Do(req)
 
 		fmt.Printf("%v - %v\n", i.Name, resp.StatusCode)
 	}
-
 }
 
 func (c *Client) AddAllIndexers(j *jackett.Jackett) {
 	var schema IndexerSchemas
 
 	inx := j.GetConfiguredIndexers()
-	schm, err := c.r.GetIndexerSchema()
+	schm, err := c.C.GetIndexerSchema()
 	if err != nil {
 		log.Fatalf("1 - %v", err)
 	}
@@ -76,8 +67,7 @@ func (c *Client) AddAllIndexers(j *jackett.Jackett) {
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
-	err = json.Unmarshal(body, &schema)
-	if err != nil {
+	if err = json.Unmarshal(body, &schema); err != nil {
 		log.Fatalf("%v", err)
 	}
 
@@ -96,24 +86,19 @@ func (c *Client) AddAllIndexers(j *jackett.Jackett) {
 			if torznab.Fields[i].Name == "ApiKey" {
 				torznab.Fields[i].Value = j.GetAPI()
 			}
-			if torznab.Fields[i].Name == "RequiredFlags" {
-				torznab.Fields[i].Value = ""
-			}
 
 		}
 		data, err := json.Marshal(torznab)
 		if err != nil {
 			log.Fatalf("%s", err)
 		}
-		req, _ := c.r.BuildRequest("POST", bytes.NewBuffer(data), "indexer")
+		req, _ := c.C.BuildRequest("POST", bytes.NewBuffer(data), "indexer")
 
 		resp, err := client.Do(req)
 		if err != nil {
 			log.Print("HATA", err)
 		}
-
 		log.Printf("%v - %v\n", indexer.Name, resp.StatusCode)
-
 	}
 
 }
@@ -121,12 +106,12 @@ func (c *Client) AddAllIndexers(j *jackett.Jackett) {
 func (c *Client) DeleteAllIndexers() {
 	var schemas IndexerSchemas
 
-	req, err := c.r.GetIndexers()
+	req, err := c.C.GetIndexers()
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
 
-	resp, err := c.client.Do(req)
+	resp, err := c.Client.Do(req)
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
@@ -135,14 +120,13 @@ func (c *Client) DeleteAllIndexers() {
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
-	err = json.Unmarshal(data, &schemas)
-	if err != nil {
-		fmt.Printf("%v", err)
+	if err = json.Unmarshal(data, &schemas); err != nil {
+		log.Fatalf("%v", err)
 	}
 
 	for _, i := range schemas {
-		req, _ = c.r.DeleteIndexer(i)
-		_, err = c.client.Do(req)
+		req, _ = c.C.DeleteIndexer(i)
+		_, err = c.Client.Do(req)
 		if err != nil {
 			fmt.Printf("%v", err)
 		}

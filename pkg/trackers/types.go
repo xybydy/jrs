@@ -1,16 +1,8 @@
-package radarr
+package trackers
 
-import "net/http"
-
-type image struct {
-	coverType string
-	url       string
-}
-
-type Radarr struct {
-	api     string
-	path    string
-	headers http.Header
+type Image struct {
+	CoverType string
+	Url       string
 }
 
 type IndexerSchema struct {

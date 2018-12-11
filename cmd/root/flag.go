@@ -3,8 +3,8 @@ package root
 import (
 	cfg "jrs/cmd/config"
 	"jrs/cmd/jackett"
-	"jrs/cmd/radarr"
-	"jrs/cmd/sonarr"
+	"jrs/cmd/trackers/radarr"
+	"jrs/cmd/trackers/sonarr"
 	"jrs/config"
 	"jrs/utils"
 	"log"

@@ -58,7 +58,9 @@ func (j *Jackett) AddIndexer(id, user, passwd string) {
 	}
 
 	if index := j.indexers.GetIndexer(id); index != nil {
-		if msg, err := j.getIndexerConfig(index); err == nil {
+		if msg, err := j.getIndexerConfig(index); err != nil {
+			log.Printf("%s\n", err)
+		} else {
 			var conf IndexerConfig
 			err = json.Unmarshal(msg, &conf)
 			if err != nil {
@@ -87,9 +89,6 @@ func (j *Jackett) AddIndexer(id, user, passwd string) {
 				log.Fatalf("%s - %s", index.Name, data["error"])
 			}
 			defer resp.Body.Close()
-
-		} else {
-			log.Printf("%s\n", err)
 		}
 	} else {
 		log.Printf("There is no such indexer %s", id)

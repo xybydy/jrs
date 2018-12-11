@@ -8,7 +8,15 @@ import (
 	"strings"
 
 	"jrs/config"
+	"jrs/pkg/trackers"
 )
+
+func NewClient() *trackers.Client {
+	c := new(trackers.Client)
+	c.C = New(config.Params)
+	c.Client = new(http.Client)
+	return c
+}
 
 type Sonarr struct {
 	api     string
@@ -229,7 +237,7 @@ func (s *Sonarr) Backup() (*http.Request, error) {
 
 }
 
-func (s *Sonarr) missingEpisodeSearch() (*http.Request, error) {
+func (s *Sonarr) MissingEpisodeSearch() (*http.Request, error) {
 	data := url.Values{}
 
 	data.Add("name", "missingEpisodeSearch")
@@ -566,7 +574,7 @@ func (s *Sonarr) GetIndexerSchema() (*http.Request, error) {
 	}
 }
 
-func (s *Sonarr) DeleteIndexer(i IndexerSchema) (*http.Request, error) {
+func (s *Sonarr) DeleteIndexer(i trackers.IndexerSchema) (*http.Request, error) {
 	id := fmt.Sprintf("%v", i.ID)
 	if req, err := s.BuildRequest("DELETE", nil, "indexer", id); err == nil {
 		return req, err
@@ -575,7 +583,7 @@ func (s *Sonarr) DeleteIndexer(i IndexerSchema) (*http.Request, error) {
 	}
 }
 
-func (s *Sonarr) SetIndexer(i IndexerSchema) (*http.Request, error) {
+func (s *Sonarr) SetIndexer(i trackers.IndexerSchema) (*http.Request, error) {
 	if req, err := s.BuildRequest("POST", nil, "indexer"); err == nil {
 		return req, err
 	} else {

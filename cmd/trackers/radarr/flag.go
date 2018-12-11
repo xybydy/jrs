@@ -1,10 +1,11 @@
-package sonarr
+package radarr
 
 import (
 	"jrs/cmd"
 	"jrs/config"
 	"jrs/pkg/jackett"
-	"jrs/pkg/sonarr"
+	"jrs/pkg/trackers"
+	"jrs/pkg/trackers/radarr"
 
 	"github.com/spf13/cobra"
 )
@@ -12,29 +13,35 @@ import (
 var (
 	url string
 	api string
-	app *sonarr.Client
+	app *trackers.Client
 	j   *jackett.Jackett
 )
 
+func createApp() {
+	if app == nil {
+		app = radarr.NewClient()
+	}
+}
+
 var Cmd = &cobra.Command{
-	Use:   "sonarr",
-	Short: "Sonarr commands",
+	Use:   "radarr",
+	Short: "Radarr commands",
 	Run: func(c *cobra.Command, args []string) {
-		cmd.CheckConfig("sonarr", url, api)
+		cmd.CheckConfig("radarr", url, api)
 	},
 	PersistentPreRun: func(c *cobra.Command, args []string) {
 		if url != "" {
-			config.Params.ChangeParams("Sonarr", "path", url)
+			config.Params.ChangeParams("Radarr", "Path", url)
 		}
 		if api != "" {
-			config.Params.ChangeParams("Sonarr", "api", api)
+			config.Params.ChangeParams("Radarr", "Api", api)
 		}
 
 		createApp()
 	},
 }
 
-var testIndexers = &cobra.Command{
+var TestIndexers = &cobra.Command{
 	Use:   "test",
 	Short: "Test all indexers added to Radarr",
 	Run: func(c *cobra.Command, args []string) {
@@ -42,7 +49,7 @@ var testIndexers = &cobra.Command{
 	},
 }
 
-var addAllIndexers = &cobra.Command{
+var AddAllIndexers = &cobra.Command{
 	Use:   "add",
 	Short: "Add all available indexers to Radarr",
 	Run: func(c *cobra.Command, args []string) {
@@ -55,7 +62,7 @@ var addAllIndexers = &cobra.Command{
 	},
 }
 
-var deleteAllIndexers = &cobra.Command{
+var DeleteAllIndexers = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete all indexers in Radarr",
 	Run: func(c *cobra.Command, args []string) {
@@ -63,15 +70,10 @@ var deleteAllIndexers = &cobra.Command{
 	},
 }
 
-func createApp() {
-	if app == nil {
-		app = sonarr.NewClient()
-	}
-}
-
 func init() {
-	Cmd.Flags().StringVarP(&url, "url", "u", "", "Sonarr URL")
-	Cmd.Flags().StringVarP(&api, "api", "a", "", "API Key")
+	Cmd.PersistentFlags().StringVarP(&url, "url", "u", "", "Radarr URL")
+	Cmd.PersistentFlags().StringVarP(&api, "api", "a", "", "API Key")
 
-	Cmd.AddCommand(testIndexers, addAllIndexers, deleteAllIndexers)
+	Cmd.AddCommand(TestIndexers, AddAllIndexers, DeleteAllIndexers)
+
 }

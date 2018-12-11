@@ -10,10 +10,24 @@ import (
 	"strings"
 
 	"jrs/config"
+	"jrs/pkg/trackers"
 )
 
+type Radarr struct {
+	api     string
+	path    string
+	headers http.Header
+}
+
+func NewClient() *trackers.Client {
+	c := new(trackers.Client)
+	c.C = New(config.Params)
+	c.Client = new(http.Client)
+	return c
+}
+
 func New(c *config.Config) *Radarr {
-	conf := c.GetDestination("radarr")
+	conf := c.GetDestination("Radarr")
 	r := &Radarr{conf.Api, conf.Path, http.Header{}}
 	r.headers.Add("Content-Type", "application/json")
 	r.headers.Add("X-Api-Key", r.api)
@@ -302,8 +316,6 @@ func (r *Radarr) History(sortKey, page, pageSize, sortDir string) (*http.Request
 		data.Add("sortDir", sortDir)
 	}
 
-	// path := r.getAPIPath("history", "")
-
 	if req, err := r.BuildRequest("GET", strings.NewReader(data.Encode()), "history"); err == nil {
 		return req, err
 	} else {
@@ -314,8 +326,6 @@ func (r *Radarr) History(sortKey, page, pageSize, sortDir string) (*http.Request
 
 // Nil id returns the all movies
 func (r *Radarr) GetMovie(id string) (*http.Request, error) {
-	// path := r.getAPIPath("movie", id)
-
 	if req, err := r.BuildRequest("GET", nil, "movie", id); err == nil {
 		return req, err
 	} else {
@@ -325,7 +335,7 @@ func (r *Radarr) GetMovie(id string) (*http.Request, error) {
 }
 
 // Update and Add method not implemented yet || how to get rootfolder
-func (r *Radarr) AddMovie(title, qualityProfileID, titleSlug, tmdbID, path string, images []image, monitored bool) (*http.Request, error) {
+func (r *Radarr) AddMovie(title, qualityProfileID, titleSlug, tmdbID, path string, images []trackers.Image, monitored bool) (*http.Request, error) {
 	data := url.Values{}
 	img := new(bytes.Buffer)
 
@@ -1261,7 +1271,7 @@ func (r *Radarr) GetIndexerSchema() (*http.Request, error) {
 	}
 }
 
-func (r *Radarr) SetIndexer(i IndexerSchema) (*http.Request, error) {
+func (r *Radarr) SetIndexer(i trackers.IndexerSchema) (*http.Request, error) {
 	if req, err := r.BuildRequest("POST", nil, "indexer"); err == nil {
 		return req, err
 	} else {
@@ -1269,7 +1279,7 @@ func (r *Radarr) SetIndexer(i IndexerSchema) (*http.Request, error) {
 	}
 }
 
-func (r *Radarr) DeleteIndexer(i IndexerSchema) (*http.Request, error) {
+func (r *Radarr) DeleteIndexer(i trackers.IndexerSchema) (*http.Request, error) {
 	id := fmt.Sprintf("%v", i.ID)
 	if req, err := r.BuildRequest("DELETE", nil, "indexer", id); err == nil {
 		return req, err
