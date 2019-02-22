@@ -1,3 +1,4 @@
+// CLI commands for configuration
 package config
 
 import (
@@ -15,13 +16,16 @@ var (
 	flagExist bool
 )
 
+// Command of configuration
 var Config = &cobra.Command{
 	Use:   "config",
-	Short: "Configuration",
+	Short: "Command of the config parameters",
 }
 
 var set = &cobra.Command{
-	Use: "set",
+	Use:     "set",
+	Short:   "Set of commands to save the config parameters to the config file formatted as ´toml´ for each application.",
+	Example: "jrs config set [command] [flags] [filename]",
 }
 
 func saveSettings(app string, args []string) {
@@ -61,7 +65,9 @@ func isFlagPassed(cmd *cobra.Command) {
 }
 
 var radarr = &cobra.Command{
-	Use: "radarr",
+	Use:     "radarr",
+	Short:   "Radarr command to pass and the save the parameters to config file.",
+	Example: "jrs config set radarr --api jashdakj1827jfhs --url http://localhost:8888 settings.toml",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if isFlagPassed(cmd); !flagExist {
@@ -75,7 +81,8 @@ var radarr = &cobra.Command{
 }
 
 var sonarr = &cobra.Command{
-	Use: "sonarr",
+	Use:   "sonarr",
+	Short: "Sonarr command to pass and the save the parameters to config file.",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if isFlagPassed(cmd); !flagExist {
@@ -89,7 +96,8 @@ var sonarr = &cobra.Command{
 }
 
 var jackett = &cobra.Command{
-	Use: "jackett",
+	Use:   "jackett",
+	Short: "Jackett command to pass and the save the parameters to config file.",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if isFlagPassed(cmd); !flagExist {

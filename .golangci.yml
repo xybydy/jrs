@@ -160,7 +160,7 @@ linters:
     - scopelint
   disable-all: false
   presets:
-    - bugs
-    - unused
+     - bugs
+     - unused
   fast: true
   verbose: true

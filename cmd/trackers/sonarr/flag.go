@@ -21,7 +21,7 @@ var Cmd = &cobra.Command{
 	Use:   "sonarr",
 	Short: "Sonarr commands",
 	Run: func(c *cobra.Command, args []string) {
-		cmd.CheckConfig("sonarr", url, api)
+		cmd.GetConfig("sonarr", url, api)
 	},
 	PersistentPreRun: func(c *cobra.Command, args []string) {
 		if url != "" {

@@ -1,3 +1,4 @@
+// Command line commands for configuration
 package jackett
 
 import (
@@ -27,7 +28,7 @@ var Cmd = &cobra.Command{
 	Use:   "jackett",
 	Short: "Jackett commands",
 	Run: func(c *cobra.Command, args []string) {
-		cmd.CheckConfig("jackett", url, api)
+		cmd.GetConfig("jackett", url, api)
 	},
 	PersistentPreRun: func(c *cobra.Command, args []string) {
 		createApp()
@@ -44,7 +45,7 @@ var getAllIndexers = &cobra.Command{
 
 var listIndexers = &cobra.Command{
 	Use:   "list",
-	Short: "Command to get all indexers in jackett",
+	Short: "Command to get all indexers",
 	Run: func(c *cobra.Command, args []string) {
 		app.GetAllIndexers()
 	},
@@ -52,7 +53,7 @@ var listIndexers = &cobra.Command{
 
 var addIndexer = &cobra.Command{
 	Use:   "add",
-	Short: "Command to add indexer in jackett",
+	Short: "Command to add indexer to jackett",
 	Long:  "Please use get command to get id of the indexer before adding it.",
 	Run: func(c *cobra.Command, args []string) {
 		app.AddIndexer(id, user, pass)

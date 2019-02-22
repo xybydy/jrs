@@ -1,3 +1,4 @@
+// Main cobra command package
 package root
 
 import (
@@ -13,8 +14,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Starting point of the application
 var RootCmd = &cobra.Command{Use: "jrs",
 	Run: func(cmd *cobra.Command, args []string) {
+		if err := cmd.Help(); err != nil {
+			log.Fatal(err)
+		}
 	},
 }
 
@@ -33,7 +38,6 @@ func init() {
 				log.Fatalln(err)
 			}
 		}
-
 	case true:
 		config.ParseConfigFile()
 	}

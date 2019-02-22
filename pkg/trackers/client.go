@@ -10,12 +10,13 @@ import (
 	"net/http"
 )
 
-type Client struct {
+// Common methods of applications resides here
+type CommonTracker struct {
 	C      Tracker
 	Client *http.Client
 }
 
-func (c *Client) TestAllIndexers() {
+func (c *CommonTracker) TestAllIndexers() {
 	var schemas IndexerSchemas
 
 	req, _ := c.C.GetIndexers()
@@ -47,7 +48,7 @@ func (c *Client) TestAllIndexers() {
 	}
 }
 
-func (c *Client) AddAllIndexers(j *jackett.Jackett) {
+func (c *CommonTracker) AddAllIndexers(j *jackett.Jackett) {
 	var schema IndexerSchemas
 
 	inx := j.GetConfiguredIndexers()
@@ -103,7 +104,7 @@ func (c *Client) AddAllIndexers(j *jackett.Jackett) {
 
 }
 
-func (c *Client) DeleteAllIndexers() {
+func (c *CommonTracker) DeleteAllIndexers() {
 	var schemas IndexerSchemas
 
 	req, err := c.C.GetIndexers()

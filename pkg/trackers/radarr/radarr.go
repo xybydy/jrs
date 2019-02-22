@@ -28,7 +28,7 @@ func NewClient() *trackers.Client {
 
 func New(c *config.Config) *Radarr {
 	conf := c.GetDestination("Radarr")
-	r := &Radarr{conf.Api, conf.Path, http.Header{}}
+	r := &Radarr{api: conf.Api, path: conf.Path, headers: http.Header{}}
 	r.headers.Add("Content-Type", "application/json")
 	r.headers.Add("X-Api-Key", r.api)
 	return r
@@ -436,27 +436,6 @@ func (r *Radarr) SystemStatus() (*http.Request, error) {
 
 }
 
-// GET /config/mediamanagement Response
-// {
-// "autoUnmonitorPreviouslyDownloadedEpisodes": false,
-// "recycleBin": "",
-// "autoDownloadPropers": true,
-// "createEmptySeriesFolders": false,
-// "fileDate": "none",
-// "autoRenameFolders": false,
-// "pathsDefaultStatic": false,
-// "setPermissionsLinux": false,
-// "fileChmod": "0644",
-// "folderChmod": "0755",
-// "chownUser": "",
-// "chownGroup": "",
-// "skipFreeSpaceCheckWhenImporting": false,
-// "copyUsingHardlinks": false,
-// "importExtraFiles": false,
-// "extraFileExtensions": "srt",
-// "enableMediaInfo": true,
-// "id": 1
-// }
 func (r *Radarr) ConfigMediaManagement() (*http.Request, error) {
 	if req, err := r.BuildRequest("GET", nil, "config", "mediamanagement"); err == nil {
 		return req, err
@@ -465,20 +444,6 @@ func (r *Radarr) ConfigMediaManagement() (*http.Request, error) {
 	}
 }
 
-// GET /config/naming Response
-// {
-// "renameEpisodes": true,
-// "replaceIllegalCharacters": true,
-// "colonReplacementFormat": "delete",
-// "standardMovieFormat": "{Movie.Title}.{Release.Year}.{Quality.Title}",
-// "movieFolderFormat": "{Movie Title} ({Release Year})",
-// "multiEpisodeStyle": 0,
-// "includeSeriesTitle": false,
-// "includeEpisodeTitle": false,
-// "includeQuality": false,
-// "replaceSpaces": false,
-// "id": 1
-// }
 func (r *Radarr) ConfigNaming() (*http.Request, error) {
 	if req, err := r.BuildRequest("GET", nil, "config", "naming"); err == nil {
 		return req, err
@@ -488,19 +453,6 @@ func (r *Radarr) ConfigNaming() (*http.Request, error) {
 
 }
 
-// GET /config/indexer
-// {
-// "minimumAge": 0,
-// "maximumSize": 0,
-// "retention": 0,
-// "rssSyncInterval": 60,
-// "preferIndexerFlags": true,
-// "availabilityDelay": 0,
-// "allowHardcodedSubs": false,
-// "whitelistedHardcodedSubs": "",
-// "parsingLeniency": "strict",
-// "id": 1
-// }
 func (r *Radarr) ConfigIndexer() (*http.Request, error) {
 	if req, err := r.BuildRequest("GET", nil, "config", "indexer"); err == nil {
 		return req, err
@@ -509,17 +461,6 @@ func (r *Radarr) ConfigIndexer() (*http.Request, error) {
 	}
 }
 
-// GET /config/downloadclient
-// {
-// "downloadedMoviesFolder": "",
-// "downloadClientWorkingFolders": "_UNPACK_|_FAILED_",
-// "downloadedMoviesScanInterval": 0,
-// "enableCompletedDownloadHandling": true,
-// "removeCompletedDownloads": true,
-// "autoRedownloadFailed": true,
-// "removeFailedDownloads": true,
-// "id": 1
-// }
 func (r *Radarr) ConfigDownloadClient() (*http.Request, error) {
 	if req, err := r.BuildRequest("GET", nil, "config", "downloadclient"); err == nil {
 		return req, err
@@ -528,125 +469,6 @@ func (r *Radarr) ConfigDownloadClient() (*http.Request, error) {
 	}
 }
 
-// GET /downloadclient
-// [{
-// "enable": true,
-// "protocol": "torrent",
-// "name": "transmission",
-// "fields": [
-// {
-// "order": 0,
-// "name": "Host",
-// "label": "Host",
-// "value": "192.*.*.*",
-// "type": "textbox",
-// "advanced": false
-// },
-// {
-// "order": 1,
-// "name": "Port",
-// "label": "Port",
-// "value": 9091,
-// "type": "textbox",
-// "advanced": false
-// },
-// {
-// "order": 2,
-// "name": "UrlBase",
-// "label": "Url Base",
-// "helpText": "Adds a prefix to the transmission rpc url, eg http://[host]:[port]/[urlBase]/rpc, defaults to '/transmission/'",
-// "value": "/transmission/",
-// "type": "textbox",
-// "advanced": true
-// },
-// {
-// "order": 3,
-// "name": "Username",
-// "label": "Username",
-// "type": "textbox",
-// "advanced": false
-// },
-// {
-// "order": 4,
-// "name": "Password",
-// "label": "Password",
-// "type": "password",
-// "advanced": false
-// },
-// {
-// "order": 5,
-// "name": "TvCategory",
-// "label": "Category",
-// "helpText": "Adding a category specific to Sonarr avoids conflicts with unrelated downloads, but it's optional. Creates a [category] subdirectory in the output directory.",
-// "type": "textbox",
-// "advanced": false
-// },
-// {
-// "order": 6,
-// "name": "TvDirectory",
-// "label": "Directory",
-// "helpText": "Optional location to put downloads in, leave blank to use the default Transmission location",
-// "type": "textbox",
-// "advanced": true
-// },
-// {
-// "order": 7,
-// "name": "RecentTvPriority",
-// "label": "Recent Priority",
-// "helpText": "Priority to use when grabbing episodes that aired within the last 14 days",
-// "value": 0,
-// "type": "select",
-// "advanced": false,
-// "selectOptions": [
-// {
-// "value": 0,
-// "name": "Last"
-// },
-// {
-// "value": 1,
-// "name": "First"
-// }
-// ]},
-// {
-// "order": 8,
-// "name": "OlderTvPriority",
-// "label": "Older Priority",
-// "helpText": "Priority to use when grabbing episodes that aired over 14 days ago",
-// "value": 0,
-// "type": "select",
-// "advanced": false,
-// "selectOptions": [
-// {
-// "value": 0,
-// "name": "Last"
-// },
-// {
-// "value": 1,
-// "name": "First"
-// }]
-// },
-// {
-// "order": 9,
-// "name": "AddPaused",
-// "label": "Add Paused",
-// "value": false,
-// "type": "checkbox",
-// "advanced": false
-// },
-// {
-// "order": 10,
-// "name": "UseSsl",
-// "label": "Use SSL",
-// "value": false,
-// "type": "checkbox",
-// "advanced": false
-// }],
-// "implementationName": "Transmission",
-// "implementation": "Transmission",
-// "configContract": "TransmissionSettings",
-// "infoLink": "https://github.com/Sonarr/Sonarr/wiki/Supported-DownloadClients#transmission",
-// "id": 1
-// }]
 func (r *Radarr) GetDownloadClient() (*http.Request, error) {
 	if req, err := r.BuildRequest("GET", nil, "downloadclient"); err == nil {
 		return req, err
@@ -655,17 +477,6 @@ func (r *Radarr) GetDownloadClient() (*http.Request, error) {
 	}
 }
 
-// GET /config/notification
-// {
-// "downloadedMoviesFolder": "",
-// "downloadClientWorkingFolders": "_UNPACK_|_FAILED_",
-// "downloadedMoviesScanInterval": 0,
-// "enableCompletedDownloadHandling": true,
-// "removeCompletedDownloads": true,
-// "autoRedownloadFailed": true,
-// "removeFailedDownloads": true,
-// "id": 1
-// }
 func (r *Radarr) ConfigNotification() (*http.Request, error) {
 	if req, err := r.BuildRequest("GET", nil, "config", "notification"); err == nil {
 		return req, err
@@ -674,33 +485,6 @@ func (r *Radarr) ConfigNotification() (*http.Request, error) {
 	}
 }
 
-// GET /config/host
-// {
-// "bindAddress": "*",
-// "port": 9090,
-// "sslPort": 9898,
-// "enableSsl": false,
-// "launchBrowser": true,
-// "authenticationMethod": "none",
-// "analyticsEnabled": true,
-// "logLevel": "Info",
-// "branch": "nightly",
-// "apiKey": "XXXXXXXXXXXXX",
-// "sslCertHash": "",
-// "urlBase": "/radarr",
-// "updateAutomatically": false,
-// "updateMechanism": "builtIn",
-// "updateScriptPath": "",
-// "proxyEnabled": false,
-// "proxyType": "http",
-// "proxyHostname": "",
-// "proxyPort": 8080,
-// "proxyUsername": "",
-// "proxyPassword": "",
-// "proxyBypassFilter": "",
-// "proxyBypassLocalAddresses": true,
-// "id": 1
-// }
 func (r *Radarr) ConfigHost() (*http.Request, error) {
 	if req, err := r.BuildRequest("GET", nil, "config", "host"); err == nil {
 		return req, err
@@ -709,17 +493,6 @@ func (r *Radarr) ConfigHost() (*http.Request, error) {
 	}
 }
 
-// GET /config/ui
-// {
-// "firstDayOfWeek": 1,
-// "calendarWeekColumnHeader": "ddd M/D",
-// "shortDateFormat": "MMM D YYYY",
-// "longDateFormat": "dddd, MMMM D YYYY",
-// "timeFormat": "h(:mm)a",
-// "showRelativeDates": true,
-// "enableColorImpairedMode": false,
-// "id": 1
-// }
 func (r *Radarr) ConfigUI() (*http.Request, error) {
 	if req, err := r.BuildRequest("GET", nil, "config", "ui"); err == nil {
 		return req, err
@@ -728,16 +501,6 @@ func (r *Radarr) ConfigUI() (*http.Request, error) {
 	}
 }
 
-// GET /config/netimport
-// {
-// "netImportSyncInterval": 1440,
-// "listSyncLevel": "disabled",
-// "importExclusions": "",
-// "traktAuthToken": "XXX",
-// "traktRefreshToken": "XXX",
-// "traktTokenExpiry": 1532979325,
-// "id": 1
-// }
 func (r *Radarr) ConfigNetImport() (*http.Request, error) {
 	if req, err := r.BuildRequest("GET", nil, "config", "netimport"); err == nil {
 		return req, err
@@ -754,147 +517,6 @@ func (r *Radarr) GetNetImport() (*http.Request, error) {
 	}
 }
 
-// GET /config/profile
-// Array of below
-// {
-// "name": "Any",
-// "cutoff": {
-// "id": 4,
-// "name": "HDTV-720p",
-// "source": "television",
-// "resolution": 720
-// },
-// "items": [
-// {
-// "quality": {
-// "id": 0,
-// "name": "Unknown",
-// "source": "unknown",
-// "resolution": 0
-// },
-// "allowed": true
-// },
-// {
-// "quality": {
-// "id": 1,
-// "name": "SDTV",
-// "source": "television",
-// "resolution": 480
-// },
-// "allowed": true
-// },
-// {
-// "quality": {
-// "id": 8,
-// "name": "WEBDL-480p",
-// "source": "web",
-// "resolution": 480
-// },
-// "allowed": true
-// },
-// {
-// "quality": {
-// "id": 2,
-// "name": "DVD",
-// "source": "dvd",
-// "resolution": 480
-// },
-// "allowed": true
-// },
-// {
-// "quality": {
-// "id": 4,
-// "name": "HDTV-720p",
-// "source": "television",
-// "resolution": 720
-// },
-// "allowed": true
-// },
-// {
-// "quality": {
-// "id": 9,
-// "name": "HDTV-1080p",
-// "source": "television",
-// "resolution": 1080
-// },
-// "allowed": true
-// },
-// {
-// "quality": {
-// "id": 10,
-// "name": "Raw-HD",
-// "source": "televisionRaw",
-// "resolution": 1080
-// },
-// "allowed": false
-// },
-// {
-// "quality": {
-// "id": 5,
-// "name": "WEBDL-720p",
-// "source": "web",
-// "resolution": 720
-// },
-// "allowed": true
-// },
-// {
-// "quality": {
-// "id": 6,
-// "name": "Bluray-720p",
-// "source": "bluray",
-// "resolution": 720
-// },
-// "allowed": true
-// },
-// {
-// "quality": {
-// "id": 3,
-// "name": "WEBDL-1080p",
-// "source": "web",
-// "resolution": 1080
-// },
-// "allowed": true
-// },
-// {
-// "quality": {
-// "id": 7,
-// "name": "Bluray-1080p",
-// "source": "bluray",
-// "resolution": 1080
-// },
-// "allowed": true
-// },
-// {
-// "quality": {
-// "id": 16,
-// "name": "HDTV-2160p",
-// "source": "television",
-// "resolution": 2160
-// },
-// "allowed": false
-// },
-// {
-// "quality": {
-// "id": 18,
-// "name": "WEBDL-2160p",
-// "source": "web",
-// "resolution": 2160
-// },
-// "allowed": false
-// },
-// {
-// "quality": {
-// "id": 19,
-// "name": "Bluray-2160p",
-// "source": "bluray",
-// "resolution": 2160
-// },
-// "allowed": false
-// }
-// ],
-// "language": "english",
-// "id": 1
-// }
 func (r *Radarr) ConfigProfile() (*http.Request, error) {
 	if req, err := r.BuildRequest("GET", nil, "profile"); err == nil {
 		return req, err
@@ -903,18 +525,6 @@ func (r *Radarr) ConfigProfile() (*http.Request, error) {
 	}
 }
 
-// GET /delayprofile
-// [{
-// "enableUsenet": false,
-// "enableTorrent": true,
-// "preferredProtocol": "torrent",
-// "usenetDelay": 0,
-// "torrentDelay": 120,
-// "order": 2147483647,
-// "tags": [],
-// "id": 1
-// }
-// ]
 func (r *Radarr) ConfigDelayProfile() (*http.Request, error) {
 	if req, err := r.BuildRequest("GET", nil, "delayprofile"); err == nil {
 		return req, err
@@ -923,186 +533,6 @@ func (r *Radarr) ConfigDelayProfile() (*http.Request, error) {
 	}
 }
 
-// GET /qualitydefinition
-// [{
-// "quality": {
-// "id": 0,
-// "name": "Unknown",
-// "source": "unknown",
-// "resolution": 0
-// },
-// "title": "Unknown",
-// "weight": 1,
-// "minSize": 0.0,
-// "maxSize": 40.9,
-// "id": 1
-// },
-// {
-// "quality": {
-// "id": 1,
-// "name": "SDTV",
-// "source": "television",
-// "resolution": 480
-// },
-// "title": "SDTV",
-// "weight": 2,
-// "minSize": 0.0,
-// "maxSize": 11.9,
-// "id": 2
-// },
-// {
-// "quality": {
-// "id": 8,
-// "name": "WEBDL-480p",
-// "source": "web",
-// "resolution": 480
-// },
-// "title": "WEBDL-480p",
-// "weight": 3,
-// "minSize": 0.0,
-// "maxSize": 19.1,
-// "id": 3
-// },
-// {
-// "quality": {
-// "id": 2,
-// "name": "DVD",
-// "source": "dvd",
-// "resolution": 480
-// },
-// "title": "DVD",
-// "weight": 4,
-// "minSize": 0.0,
-// "maxSize": 13.9,
-// "id": 4
-// },
-// {
-// "quality": {
-// "id": 4,
-// "name": "HDTV-720p",
-// "source": "television",
-// "resolution": 720
-// },
-// "title": "HDTV-720p",
-// "weight": 5,
-// "minSize": 0.0,
-// "maxSize": 27.5,
-// "id": 5
-// },
-// {
-// "quality": {
-// "id": 9,
-// "name": "HDTV-1080p",
-// "source": "television",
-// "resolution": 1080
-// },
-// "title": "HDTV-1080p",
-// "weight": 6,
-// "minSize": 0.0,
-// "maxSize": 44.3,
-// "id": 6
-// },
-// {
-// "quality": {
-// "id": 10,
-// "name": "Raw-HD",
-// "source": "televisionRaw",
-// "resolution": 1080
-// },
-// "title": "Raw-HD",
-// "weight": 7,
-// "minSize": 0.0,
-// "id": 7
-// },
-// {
-// "quality": {
-// "id": 5,
-// "name": "WEBDL-720p",
-// "source": "web",
-// "resolution": 720
-// },
-// "title": "WEBDL-720p",
-// "weight": 8,
-// "minSize": 0.0,
-// "maxSize": 30.1,
-// "id": 8
-// },
-// {
-// "quality": {
-// "id": 6,
-// "name": "Bluray-720p",
-// "source": "bluray",
-// "resolution": 720
-// },
-// "title": "Bluray-720p",
-// "weight": 9,
-// "minSize": 0.0,
-// "maxSize": 28.8,
-// "id": 9
-// },
-// {
-// "quality": {
-// "id": 3,
-// "name": "WEBDL-1080p",
-// "source": "web",
-// "resolution": 1080
-// },
-// "title": "WEBDL-1080p",
-// "weight": 10,
-// "minSize": 0.0,
-// "maxSize": 44.3,
-// "id": 10
-// },
-// {
-// "quality": {
-// "id": 7,
-// "name": "Bluray-1080p",
-// "source": "bluray",
-// "resolution": 1080
-// },
-// "title": "Bluray-1080p",
-// "weight": 11,
-// "minSize": 0.0,
-// "maxSize": 44.7,
-// "id": 11
-// },
-// {
-// "quality": {
-// "id": 16,
-// "name": "HDTV-2160p",
-// "source": "television",
-// "resolution": 2160
-// },
-// "title": "HDTV-2160p",
-// "weight": 12,
-// "minSize": 0.0,
-// "id": 12
-// },
-// {
-// "quality": {
-// "id": 18,
-// "name": "WEBDL-2160p",
-// "source": "web",
-// "resolution": 2160
-// },
-// "title": "WEBDL-2160p",
-// "weight": 13,
-// "minSize": 0.0,
-// "id": 13
-// },
-// {
-// "quality": {
-// "id": 19,
-// "name": "Bluray-2160p",
-// "source": "bluray",
-// "resolution": 2160
-// },
-// "title": "Bluray-2160p",
-// "weight": 14,
-// "minSize": 0.0,
-// "id": 14
-// }
-// ]
 func (r *Radarr) ConfigQualityDefinition() (*http.Request, error) {
 	if req, err := r.BuildRequest("GET", nil, "qualitydefinition"); err == nil {
 		return req, err
@@ -1111,111 +541,6 @@ func (r *Radarr) ConfigQualityDefinition() (*http.Request, error) {
 	}
 }
 
-// GET /indexers
-// {
-// "enableRss": true,
-// "enableSearch": true,
-// "supportsRss": true,
-// "supportsSearch": true,
-// "protocol": "torrent",
-// "name": "demon",
-// "fields": [
-// {
-// "order": 0,
-// "name": "BaseUrl",
-// "label": "URL",
-// "value": "http://192.168.1.**:8888/torznab/demonoid",
-// "type": "textbox",
-// "advanced": false
-// },
-// {
-// "order": 1,
-// "name": "ApiPath",
-// "label": "API Path",
-// "helpText": "Path to the api, usually /api",
-// "value": "/api",
-// "type": "textbox",
-// "advanced": true
-// },
-// {
-// "order": 2,
-// "name": "ApiKey",
-// "label": "API Key",
-// "value": "API KEY",
-// "type": "textbox",
-// "advanced": false
-// },
-// {
-// "order": 3,
-// "name": "Categories",
-// "label": "Categories",
-// "helpText": "Comma Separated list, leave blank to disable standard/daily shows",
-// "value": [
-// 5030,
-// 5040
-// ],
-// "type": "textbox",
-// "advanced": false
-// },
-// {
-// "order": 4,
-// "name": "AnimeCategories",
-// "label": "Anime Categories",
-// "helpText": "Comma Separated list, leave blank to disable anime",
-// "value": [],
-// "type": "textbox",
-// "advanced": false
-// },
-// {
-// "order": 5,
-// "name": "AdditionalParameters",
-// "label": "Additional Parameters",
-// "helpText": "Additional Newznab parameters",
-// "type": "textbox",
-// "advanced": true
-// },
-// {
-// "order": 6,
-// "name": "MinimumSeeders",
-// "label": "Minimum Seeders",
-// "helpText": "Minimum number of seeders required.",
-// "value": 1,
-// "type": "textbox",
-// "advanced": true
-// },
-// {
-// "order": 7,
-// "name": "SeedCriteria.SeedRatio",
-// "label": "Seed Ratio",
-// "helpText": "The ratio a torrent should reach before stopping, empty is download Client's default",
-// "type": "textbox",
-// "advanced": true
-// },
-// {
-// "order": 8,
-// "name": "SeedCriteria.SeedTime",
-// "label": "Seed Time",
-// "unit": "minutes",
-// "helpText": "The time a torrent should be seeded before stopping, empty is download Client's default",
-// "type": "textbox",
-// "advanced": true
-// },
-// {
-// "order": 9,
-// "name": "SeedCriteria.SeasonPackSeedTime",
-// "label": "Season-Pack Seed Time",
-// "unit": "minutes",
-// "helpText": "The time a torrent should be seeded before stopping, empty is download Client's default",
-// "type": "textbox",
-// "advanced": true
-// }
-// ],
-// "implementationName": "Torznab",
-// "implementation": "Torznab",
-// "configContract": "TorznabSettings",
-// "infoLink": "https://github.com/Sonarr/Sonarr/wiki/Supported-Indexers#torznab",
-// "id": 13
-// }
 func (r *Radarr) GetIndexers() (*http.Request, error) {
 	if req, err := r.BuildRequest("GET", nil, "indexer"); err == nil {
 		return req, err
@@ -1224,13 +549,6 @@ func (r *Radarr) GetIndexers() (*http.Request, error) {
 	}
 }
 
-// GET /remotePathMapping
-// [{
-// "host": "192.*.*.*",
-// "remotePath": "/*/*/*/*/",
-// "localPath": "/*/*/",
-// "id": 1
-// }]
 func (r *Radarr) GetRemotePathMapping() (*http.Request, error) {
 	if req, err := r.BuildRequest("GET", nil, "remotePathMapping"); err == nil {
 		return req, err
@@ -1282,6 +600,20 @@ func (r *Radarr) SetIndexer(i trackers.IndexerSchema) (*http.Request, error) {
 func (r *Radarr) DeleteIndexer(i trackers.IndexerSchema) (*http.Request, error) {
 	id := fmt.Sprintf("%v", i.ID)
 	if req, err := r.BuildRequest("DELETE", nil, "indexer", id); err == nil {
+		return req, err
+	} else {
+		return nil, err
+	}
+}
+
+func (r *Radarr) bulkImport(folderPath string, pageSize string) (*http.Request, error) {
+	data := url.Values{}
+	data.Add("id", "1")
+	data.Add("folder", folderPath) // Full path to source folder
+	data.Add("per_page", pageSize)
+	data.Add("sort", "sortTitle")
+
+	if req, err := r.BuildRequest("GET", strings.NewReader(data.Encode()), "movies", "bulkimport"); err == nil {
 		return req, err
 	} else {
 		return nil, err

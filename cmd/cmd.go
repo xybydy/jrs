@@ -1,3 +1,4 @@
+// Terminal command functions and helper functions resides on this package
 package cmd
 
 import (
@@ -6,7 +7,10 @@ import (
 	"strings"
 )
 
-func CheckConfig(dest, url, api string) {
+// Checks the parameters of the applications in the config file
+// If parameters passed as command line parameters, it overrides the parameters in the config file.
+// If either there is no parameters passed nor exist in config file error occurs.
+func GetConfig(dest, url, api string) {
 	app := config.Params.GetDestination(dest)
 
 	if app.Path == "" && url == "" {

@@ -7,6 +7,23 @@ import (
 	"log"
 )
 
+func (j *Jackett) getIndexerConfig(i *Indexer) ([]byte, error) {
+
+	resp, err := j.client.Do(j.getIndexerConfigReq(i.ID))
+	if err != nil {
+		log.Printf("%s\n", err)
+	}
+	defer resp.Body.Close()
+
+	msg, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("%s\n", err)
+	}
+
+	return msg, err
+}
+
+// Sends an API Request to Jackett server to get all available indexers.
 func (j *Jackett) GetAllIndexers() {
 	req := j.getAllIndexers()
 	resp, err := j.client.Do(req)
@@ -23,6 +40,7 @@ func (j *Jackett) GetAllIndexers() {
 	}
 }
 
+// Sends an API Request to Jackett server to get all configured indexers.
 func (j *Jackett) GetConfiguredIndexers() Indexers {
 	inx := Indexers{}
 	if len(j.indexers) == 0 {
@@ -34,22 +52,6 @@ func (j *Jackett) GetConfiguredIndexers() Indexers {
 		}
 	}
 	return inx
-}
-
-func (j *Jackett) getIndexerConfig(i *Indexer) ([]byte, error) {
-
-	resp, err := j.client.Do(j.getIndexerConfigReq(i.ID))
-	if err != nil {
-		log.Printf("%s\n", err)
-	}
-	defer resp.Body.Close()
-
-	msg, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Printf("%s\n", err)
-	}
-
-	return msg, err
 }
 
 func (j *Jackett) AddIndexer(id, user, passwd string) {

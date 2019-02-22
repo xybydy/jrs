@@ -27,7 +27,7 @@ var Cmd = &cobra.Command{
 	Use:   "radarr",
 	Short: "Radarr commands",
 	Run: func(c *cobra.Command, args []string) {
-		cmd.CheckConfig("radarr", url, api)
+		cmd.GetConfig("radarr", url, api)
 	},
 	PersistentPreRun: func(c *cobra.Command, args []string) {
 		if url != "" {
@@ -69,6 +69,20 @@ var DeleteAllIndexers = &cobra.Command{
 		app.DeleteAllIndexers()
 	},
 }
+
+var BulkImportMovies = &cobra.Command{
+	User: "bulkimport",
+	Short: "Scans folder provided to import the movies",
+	Run: func(c *cobra.Command, args []string){
+		if len(args<1){
+			log.Fatalf("There is no folder provided")
+		}
+		
+
+
+	}
+}
+
 
 func init() {
 	Cmd.PersistentFlags().StringVarP(&url, "url", "u", "", "Radarr URL")

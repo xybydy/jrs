@@ -98,4 +98,5 @@ vendor/
 *.toml
 *_test.go
 .vscode/
+out/
 debug
