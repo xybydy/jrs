@@ -44,3 +44,28 @@ func (i *IndexerSchemas) GetTorznab() *IndexerSchema {
 	}
 	return nil
 }
+
+type CommandSummaryResult struct {
+	Name    string `json:"name,omitempty"`
+	Message string `json:"message,omitempty"`
+	Body    struct {
+		movieIds            []int  `json:"movieIds,omitempty"`
+		SendUpdatesToClient bool   `json:"sendUpdatesToClient,omitempty"`
+		UpdateScheduledTask bool   `json:"updateScheduledTask,omitempty"`
+		completionMessage   string `json:"completionMessage,omitempty"`
+		Name                string `json:"name,omitempty"`
+		Trigger             string `json:"trigger,omitempty"`
+	} `json:"body,omitempty"`
+	Priority            string `json:"priority,omitempty"`
+	Status              string `json:"status,omitempty"`
+	Queued              string `json:"queued,omitempty"`  // Date
+	Started             string `json:"started,omitempty"` // Date
+	Trigger             string `json:"trigger,omitempty"`
+	State               string `json:"state,omitempty"`
+	Manual              bool   `json:"manual,omitempty"`
+	StartedOn           string `json:"startedOn,omitempty"`       // Date
+	StateChangeTime     string `json:"stateChangeTime,omitempty"` //Date
+	SendUpdatesToClient bool   `json:"sendUpdatesToClient,omitempty"`
+	UpdateScheduledTask bool   `json:"updateScheduledTask,omitempty"`
+	Id                  int    `json:"id,omitempty"`
+}

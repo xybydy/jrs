@@ -11,41 +11,33 @@ import (
 	"jrs/pkg/trackers"
 )
 
-func NewClient() *trackers.Client {
-	c := new(trackers.Client)
-	c.C = New(config.Params)
-	c.Client = new(http.Client)
-	return c
-}
-
 type Sonarr struct {
-	api     string
-	path    string
-	headers http.Header
+	trackers.CommonTracker
 }
 
 func New(c *config.Config) *Sonarr {
 	conf := c.GetDestination("Sonarr")
-	s := &Sonarr{conf.Api, conf.Path, http.Header{}}
-	s.headers.Add("Content-Type", "application/json")
-	s.headers.Add("X-Api-Key", s.api)
+	s := new(Sonarr)
+	t := trackers.CreateTracker(s, conf.Api, conf.Path)
+	t.Headers.Add("Content-Type", "application/json")
+	t.Headers.Add("X-Api-Key", s.Api)
 	return s
 }
 
 func (s *Sonarr) GetHeaders() http.Header {
-	return s.headers
+	return s.Headers
 }
 
 func (s *Sonarr) BuildRequest(method string, body io.Reader, args ...string) (*http.Request, error) {
 	// TODO URL Base olmayinca cogu komut calismiyor. URL base eklemek gerekecek.
-	path := s.path + "/api"
+	path := s.Path + "/api"
 
 	for _, arg := range args {
 		path = path + "/" + arg
 	}
 
 	if request, err := http.NewRequest(method, path, body); err == nil {
-		request.Header = s.headers
+		request.Header = s.Headers
 		return request, err
 	} else {
 		return nil, err

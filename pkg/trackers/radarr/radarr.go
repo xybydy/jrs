@@ -14,35 +14,27 @@ import (
 )
 
 type Radarr struct {
-	api     string
-	path    string
-	headers http.Header
-}
-
-func NewClient() *trackers.Client {
-	c := new(trackers.Client)
-	c.C = New(config.Params)
-	c.Client = new(http.Client)
-	return c
+	trackers.CommonTracker
 }
 
 func New(c *config.Config) *Radarr {
 	conf := c.GetDestination("Radarr")
-	r := &Radarr{api: conf.Api, path: conf.Path, headers: http.Header{}}
-	r.headers.Add("Content-Type", "application/json")
-	r.headers.Add("X-Api-Key", r.api)
+	r := new(Radarr)
+	t := trackers.CreateTracker(r, conf.Api, conf.Path)
+	t.Headers.Add("Content-Type", "application/json")
+	t.Headers.Add("X-Api-Key", r.Api)
 	return r
 }
 
 func (r *Radarr) BuildRequest(method string, body io.Reader, args ...string) (*http.Request, error) {
-	path := r.path + "/api"
+	path := r.Path + "/api"
 
 	for _, arg := range args {
 		path = path + "/" + arg
 	}
 
 	if request, err := http.NewRequest(method, path, body); err == nil {
-		request.Header = r.headers
+		request.Header = r.Headers
 		return request, err
 	} else {
 		return nil, err

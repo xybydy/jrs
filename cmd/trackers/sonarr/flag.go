@@ -4,7 +4,6 @@ import (
 	"jrs/cmd"
 	"jrs/config"
 	"jrs/pkg/jackett"
-	"jrs/pkg/trackers"
 	"jrs/pkg/trackers/sonarr"
 
 	"github.com/spf13/cobra"
@@ -13,7 +12,7 @@ import (
 var (
 	url string
 	api string
-	app *trackers.Client
+	app *sonarr.Sonarr
 	j   *jackett.Jackett
 )
 
@@ -66,7 +65,7 @@ var deleteAllIndexers = &cobra.Command{
 
 func createApp() {
 	if app == nil {
-		app = sonarr.NewClient()
+		app = sonarr.New(config.Params)
 	}
 }
 

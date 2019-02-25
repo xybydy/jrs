@@ -4,7 +4,6 @@ import (
 	"jrs/cmd"
 	"jrs/config"
 	"jrs/pkg/jackett"
-	"jrs/pkg/trackers"
 	"jrs/pkg/trackers/radarr"
 
 	"github.com/spf13/cobra"
@@ -13,13 +12,13 @@ import (
 var (
 	url string
 	api string
-	app *trackers.Client
+	app *radarr.Radarr
 	j   *jackett.Jackett
 )
 
 func createApp() {
 	if app == nil {
-		app = radarr.NewClient()
+		app = radarr.New(config.Params)
 	}
 }
 
@@ -70,19 +69,15 @@ var DeleteAllIndexers = &cobra.Command{
 	},
 }
 
-var BulkImportMovies = &cobra.Command{
-	User: "bulkimport",
-	Short: "Scans folder provided to import the movies",
-	Run: func(c *cobra.Command, args []string){
-		if len(args<1){
-			log.Fatalf("There is no folder provided")
-		}
-		
-
-
-	}
-}
-
+// var BulkImportMovies = &cobra.Command{
+// 	User:  "bulkimport",
+// 	Short: "Scans folder provided to import the movies",
+// 	Run: func(c *cobra.Command, args []string) {
+// 		if len(args < 1) {
+// 			log.Fatalf("There is no folder provided")
+// 		}
+// 	},
+// }
 
 func init() {
 	Cmd.PersistentFlags().StringVarP(&url, "url", "u", "", "Radarr URL")
