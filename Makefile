@@ -3,9 +3,9 @@ TARGET=jrs
 all: build
 
 deps: godep golangci
-	@dep ensure
 
 build: deps
+	@dep ensure
 	@go build -o $(TARGET) .
 
 clean:
