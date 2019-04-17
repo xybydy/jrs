@@ -1,6 +1,6 @@
 TARGET=jrs
 
-all: deps build
+all: build
 
 deps: godep golangci
 	@dep ensure
