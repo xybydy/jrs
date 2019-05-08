@@ -12,7 +12,6 @@ import (
 
 // Common methods of applications resides here
 type CommonTracker struct {
-	t       Tracker
 	Client  *http.Client
 	Api     string
 	Path    string
@@ -119,7 +118,7 @@ func (c *CommonTracker) DeleteAllIndexers() {
 		fmt.Printf("%v", err)
 	}
 
-	resp, err := c.client.Do(req)
+	resp, err := c.Client.Do(req)
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
@@ -134,7 +133,7 @@ func (c *CommonTracker) DeleteAllIndexers() {
 
 	for _, i := range schemas {
 		req, _ = c.t.DeleteIndexer(i)
-		_, err = c.client.Do(req)
+		_, err = c.Client.Do(req)
 		if err != nil {
 			fmt.Printf("%v", err)
 		}

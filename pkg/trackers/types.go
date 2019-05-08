@@ -49,10 +49,10 @@ type CommandSummaryResult struct {
 	Name    string `json:"name,omitempty"`
 	Message string `json:"message,omitempty"`
 	Body    struct {
-		movieIds            []int  `json:"movieIds,omitempty"`
+		MovieIds            []int  `json:"movieIds,omitempty"`
 		SendUpdatesToClient bool   `json:"sendUpdatesToClient,omitempty"`
 		UpdateScheduledTask bool   `json:"updateScheduledTask,omitempty"`
-		completionMessage   string `json:"completionMessage,omitempty"`
+		CompletionMessage   string `json:"completionMessage,omitempty"`
 		Name                string `json:"name,omitempty"`
 		Trigger             string `json:"trigger,omitempty"`
 	} `json:"body,omitempty"`

@@ -1,11 +1,11 @@
 TARGET=jrs
 
-all: deps build
+all: build
 
 deps: godep golangci
-	@dep ensure
 
 build: deps
+	@dep ensure
 	@go build -o $(TARGET) .
 
 clean:
@@ -19,8 +19,7 @@ godep:
 	@go get -u github.com/golang/dep/...
 
 golangci:
-	@go get -u github.com/golangci/golangci-lint
+	@go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
 	@cd $(GOPATH)/src/github.com/golangci/golangci-lint/cmd/golangci-lint
 	@go install -ldflags "-X 'main.version=$(git describe --tags)' -X 'main.commit=$(git rev-parse --short HEAD)' -X 'main.date=$(date)'"
-
 
