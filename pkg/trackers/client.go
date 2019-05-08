@@ -19,7 +19,7 @@ type CommonTracker struct {
 }
 
 func CreateTracker(t Tracker, api, path string) *CommonTracker {
-	return &CommonTracker{t: t, Client: new(http.Client), Headers: http.Header{}, Api: api, Path: path}
+	return &CommonTracker{Client: new(http.Client), Headers: http.Header{}, Api: api, Path: path}
 }
 
 func (c *CommonTracker) TestAllIndexers() {
