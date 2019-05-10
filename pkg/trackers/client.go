@@ -12,6 +12,7 @@ import (
 
 // Common methods of applications resides here
 type CommonTracker struct {
+	Tracker
 	Client  *http.Client
 	Api     string
 	Path    string
@@ -19,13 +20,13 @@ type CommonTracker struct {
 }
 
 func CreateTracker(t Tracker, api, path string) *CommonTracker {
-	return &CommonTracker{Client: new(http.Client), Headers: http.Header{}, Api: api, Path: path}
+	return &CommonTracker{Tracker: t, Client: new(http.Client), Headers: http.Header{}, Api: api, Path: path}
 }
 
 func (c *CommonTracker) TestAllIndexers() {
 	var schemas IndexerSchemas
 
-	req, _ := c.t.GetIndexers()
+	req, _ := c.GetIndexers()
 	resp, _ := c.Client.Do(req)
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -44,7 +45,7 @@ func (c *CommonTracker) TestAllIndexers() {
 		if err != nil {
 			log.Fatalf("%v\n", err)
 		}
-		req, err := c.t.BuildRequest("POST", bytes.NewBuffer(data), "indexer", "test")
+		req, err := c.BuildRequest("POST", bytes.NewBuffer(data), "indexer", "test")
 		if err != nil {
 			log.Fatalf("%v\n", err)
 		}
@@ -58,7 +59,7 @@ func (c *CommonTracker) AddAllIndexers(j *jackett.Jackett) {
 	var schema IndexerSchemas
 
 	inx := j.GetConfiguredIndexers()
-	schm, err := c.t.GetIndexerSchema()
+	schm, err := c.GetIndexerSchema()
 	if err != nil {
 		log.Fatalf("1 - %v", err)
 	}
@@ -99,7 +100,7 @@ func (c *CommonTracker) AddAllIndexers(j *jackett.Jackett) {
 		if err != nil {
 			log.Fatalf("%s", err)
 		}
-		req, _ := c.t.BuildRequest("POST", bytes.NewBuffer(data), "indexer")
+		req, _ := c.BuildRequest("POST", bytes.NewBuffer(data), "indexer")
 
 		resp, err := client.Do(req)
 		if err != nil {
@@ -113,7 +114,7 @@ func (c *CommonTracker) AddAllIndexers(j *jackett.Jackett) {
 func (c *CommonTracker) DeleteAllIndexers() {
 	var schemas IndexerSchemas
 
-	req, err := c.t.GetIndexers()
+	req, err := c.GetIndexers()
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
@@ -132,7 +133,7 @@ func (c *CommonTracker) DeleteAllIndexers() {
 	}
 
 	for _, i := range schemas {
-		req, _ = c.t.DeleteIndexer(i)
+		req, _ = c.DeleteIndexer(i)
 		_, err = c.Client.Do(req)
 		if err != nil {
 			fmt.Printf("%v", err)

@@ -44,6 +44,7 @@ func (i *IndexerSchemas) GetTorznab() *IndexerSchema {
 	}
 	return nil
 }
+
 type CommandSummaryResult struct {
 	Name    string `json:"name,omitempty"`
 	Message string `json:"message,omitempty"`
