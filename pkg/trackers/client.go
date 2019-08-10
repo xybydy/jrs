@@ -47,7 +47,7 @@ func (c *Client) TestAllIndexers() {
 	}
 }
 
-func (c *Client) AddAllIndexers(j *jackett.Jackett) {
+func (c *Client) AddAllIndexers(j *jackett.Jackett, hostdomain string) {
 	var schema IndexerSchemas
 
 	inx := j.GetConfiguredIndexers()
@@ -81,7 +81,7 @@ func (c *Client) AddAllIndexers(j *jackett.Jackett) {
 		torznab.SupportSearch = true
 		for i := range torznab.Fields {
 			if torznab.Fields[i].Name == "BaseUrl" {
-				torznab.Fields[i].Value = j.ExportTorznab(indexer.ID)
+				torznab.Fields[i].Value = j.ExportTorznab(indexer.ID, hostdomain)
 			}
 			if torznab.Fields[i].Name == "ApiKey" {
 				torznab.Fields[i].Value = j.GetAPI()

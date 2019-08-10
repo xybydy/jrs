@@ -43,8 +43,12 @@ func (j *Jackett) getAPIPath(category, action string) string {
 	return path
 }
 
-func (j *Jackett) ExportTorznab(indexerID string) string {
-	return fmt.Sprintf(j.path + "/api/v" + j.version + "/indexers/" + indexerID + "/results/torznab/")
+func (j *Jackett) ExportTorznab(indexerID string, hostdomain string) string {
+	if hostdomain == "" {
+		return fmt.Sprintf(j.path + "/api/v" + j.version + "/indexers/" + indexerID + "/results/torznab/")
+	} else {
+		return fmt.Sprintf(hostdomain + "/api/v" + j.version + "/indexers/" + indexerID + "/results/torznab/")
+	}
 }
 
 func (j *Jackett) ExportPotato(indexerID string) string {

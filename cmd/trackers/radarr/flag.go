@@ -1,6 +1,7 @@
 package radarr
 
 import (
+	"fmt"
 	"jrs/cmd"
 	"jrs/config"
 	"jrs/pkg/jackett"
@@ -53,7 +54,7 @@ var AddAllIndexers = &cobra.Command{
 	Use:   "add",
 	Short: "Add all available indexers to Radarr",
 	Run: func(c *cobra.Command, args []string) {
-		app.AddAllIndexers(j)
+		app.AddAllIndexers(j, args[0])
 	},
 	PreRun: func(c *cobra.Command, args []string) {
 		if j == nil {

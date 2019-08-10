@@ -39,6 +39,7 @@
   input-imports = [
     "github.com/burntsushi/toml",
     "github.com/spf13/cobra",
+    "github.com/spf13/pflag",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
