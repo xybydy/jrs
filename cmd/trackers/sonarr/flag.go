@@ -47,7 +47,11 @@ var addAllIndexers = &cobra.Command{
 	Use:   "add",
 	Short: "Add all available indexers",
 	Run: func(c *cobra.Command, args []string) {
-		app.AddAllIndexers(j,args[0])
+		if len(args) != 0 {
+			app.AddAllIndexers(j, args[0])
+		} else {
+			app.AddAllIndexers(j, "")
+		}
 	},
 	PreRun: func(c *cobra.Command, args []string) {
 		if j == nil {
