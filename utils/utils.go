@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"time"
 )
 
 const (
 	urlRegex = `(https?)://([^:^/]*):?(\d*)?(.*)?`
+	Iso86001 = "2006-01-02T15:04:05.000Z"
 )
 
 func BuildURL(proto, ip string, port int) string {
@@ -25,4 +27,16 @@ func IsExist(filepath string) bool {
 		return false
 	}
 	return true
+}
+
+func ConvertISO8601String(s string) string {
+	t, err := time.Parse(s, "2006-01-02")
+	if err != nil {
+		return ""
+	}
+	return t.Format(Iso86001)
+}
+
+func ConvertISO8601(year, month, day, hour, min, sec, nsec int) string {
+	return time.Date(year, time.Month(month), day, hour, min, sec, nsec, time.UTC).Format(Iso86001)
 }
